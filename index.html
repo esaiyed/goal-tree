@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reprogram Your Mind</title>
+<meta name="description" content="Build your 30-day goal tree: turn your biggest stresses into fruits, pick a power goal you believe, and watch it grow as you visualize every day.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* layout: full-bleed 3D stage at night, title top-left, steps and meters right, 30-day timeline dock at the bottom */
+  --bg:#0a0f24;
+  --panel:rgba(13,19,43,.82);
+  --line:rgba(160,176,230,.2);
+  --text:#e9edf8;
+  --muted:#9ea8c6;
+  --gold:#f5b942;
+  --mint:#5ee6a8;
+  --red:#ff5a5f;
+  --bark:#d9a066;
+  --display:"Sora","Segoe UI",system-ui,sans-serif;
+  --body:"Manrope","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--body);overflow:hidden;-webkit-font-smoothing:antialiased}
+#stage{position:fixed;inset:0}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#stage canvas:active{cursor:grabbing}
+.nogl{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--muted);max-width:320px;text-align:center}
+#labels{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;left:0;top:0;will-change:transform;transition:opacity .25s}
+.lbl .in{display:flex;align-items:flex-start;gap:8px;transform:translate(-6px,-14px)}
+.lbl .dot{width:8px;height:8px;border-radius:50%;border:2px solid currentColor;background:var(--bg);margin-top:8px;flex:none}
+.lbl .txt{background:var(--panel);border:1px solid var(--line);border-left:3px solid currentColor;border-radius:0 10px 10px 0;padding:6px 10px;max-width:230px}
+.lbl b{display:block;font-family:var(--display);font-weight:600;font-size:13px;color:var(--text)}
+.lbl span{display:block;font-size:12px;color:var(--muted);line-height:1.35;margin-top:2px}
+.lbl.fruitlbl{color:var(--gold)}
+.lbl.trunk{color:var(--bark)}
+.lbl.trunk .txt{max-width:280px}
+@media (max-width:860px){ .lbl.trunk .txt{max-width:180px} }
+.lbl.roots{color:var(--mint)}
+.lbl .key{display:inline-flex;align-items:center;gap:4px;margin-right:8px}
+.lbl .key i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.chip .in{transform:none}
+.lbl.fruitlbl .in{flex-direction:column-reverse;align-items:center;gap:4px;transform:translate(-50%,calc(-100% + 4px))}
+.lbl.fruitlbl .dot{margin-top:0}
+.lbl.roots .in{flex-direction:row-reverse;transform:translate(calc(-100% + 6px),-14px)}
+.lbl.roots .txt{border-left:1px solid var(--line);border-right:3px solid currentColor;border-radius:10px 0 0 10px;text-align:right}
+.lbl.roots.flip .in{flex-direction:row;transform:translate(-6px,-14px)}
+.lbl.roots.flip .txt{text-align:left;border-right:1px solid var(--line);border-left:3px solid currentColor;border-radius:0 10px 10px 0}
+.fcloud{display:none}
+@media (max-width:600px){
+  .chip,#leaders{display:none}
+  .fcloud{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+  .fcloud i{font-style:normal;font-size:11px;font-weight:500;color:#ffe2a0;background:rgba(40,30,8,.78);border:1px solid rgba(245,185,66,.5);border-radius:8px;padding:2px 7px}
+  .lbl.fruitlbl .txt{max-width:280px}
+}
+#leaders{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#leaders line{stroke:#f5b942;stroke-width:1;transition:opacity .25s}
+.chip .pill{display:inline-block;max-width:200px;line-height:1.3;font-size:12px;font-weight:500;white-space:normal;color:#ffe2a0;background:rgba(40,30,8,.78);border:1px solid rgba(245,185,66,.55);border-radius:10px;padding:4px 9px}
+.title{position:fixed;top:18px;left:20px;max-width:380px;pointer-events:none}
+.eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin:0 0 6px;font-weight:700}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,34px);line-height:1.15;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:14px;line-height:1.5;margin:8px 0 0;max-width:340px}
+#panel{position:fixed;top:64px;right:16px;width:290px;max-height:calc(100% - 250px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:18px;box-sizing:border-box}
+#panel h2{font-family:var(--display);font-size:13px;font-weight:600;margin:0 0 10px;letter-spacing:.02em}
+.meters{display:grid;gap:10px}
+.meter{display:grid;grid-template-columns:1fr auto;gap:4px 8px;font-size:12px;color:var(--muted)}
+.meter .val{font-variant-numeric:tabular-nums;color:var(--text);font-weight:500}
+.bar{grid-column:1/-1;height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:3px}
+#steps{margin:0;padding:0;list-style:none;display:grid;gap:4px;counter-reset:s}
+#steps li{display:grid;grid-template-columns:22px 1fr;gap:9px;align-items:start;font-size:13px;line-height:1.4;color:var(--muted);padding:6px 8px;border-radius:8px;transition:background .3s,color .3s}
+#steps li::before{counter-increment:s;content:counter(s);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;border:1px solid var(--line);box-sizing:border-box;transition:background .3s,color .3s}
+#steps li.on{background:rgba(94,230,168,.1);color:var(--text)}
+#steps li.on::before{background:var(--mint);color:#0a0f24;border-color:var(--mint)}
+.note{font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.45}
+#editForm{display:grid;gap:8px;margin-top:10px}
+#editForm[hidden]{display:none}
+#editForm label{font-size:12px;color:var(--muted)}
+#editForm input,#editForm textarea{resize:vertical;line-height:1.45;width:100%;box-sizing:border-box;font:inherit;font-size:13px;color:var(--text);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+.count{font-size:11px;color:var(--muted);text-align:right;margin-top:-4px;font-variant-numeric:tabular-nums}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+#dock{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(780px,calc(100% - 32px));box-sizing:border-box;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:grid;gap:12px}
+.phase{display:flex;gap:12px;align-items:flex-start;min-height:58px}
+#dayBadge{font-family:var(--display);font-weight:600;font-size:13px;background:var(--gold);color:#1d1605;border-radius:8px;padding:6px 10px;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:52px;text-align:center}
+#dayBadge.doubt{background:var(--red);color:#2a0607}
+#phaseTitle{display:block;font-family:var(--display);font-weight:600;font-size:15px}
+#phaseText{display:block;font-size:13px;color:var(--muted);line-height:1.45;margin-top:3px}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.track{flex:1 1 220px;display:grid;gap:2px}
+.track input{width:100%;accent-color:var(--gold);margin:0}
+.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+button{font:inherit;font-size:13px;font-weight:500;color:var(--text);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+button:hover{background:rgba(255,255,255,.13)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#playBtn{background:var(--gold);color:#1d1605;border-color:transparent;min-width:92px}
+#playBtn:hover{background:#ffcb63}
+#doubtBtn{border-color:rgba(255,90,95,.55);color:#ffb3b5}
+#snapBtn{border-color:rgba(94,230,168,.55);color:#aef4d2}
+#topbar{position:fixed;top:16px;right:16px;display:flex;gap:8px;align-items:center;z-index:5}
+.acct-label{font-size:12px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modal{position:fixed;inset:0;background:rgba(5,8,20,.68);display:grid;place-items:center;z-index:20;padding:16px}
+.modal[hidden]{display:none}
+.dialog{position:relative;width:min(400px,100%);background:#111833;border:1px solid var(--line);border-radius:16px;padding:22px;display:grid;gap:12px;box-sizing:border-box}
+.dialog h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0;padding-right:28px}
+.dialog .note{margin:0}
+.dialog form{display:grid;gap:8px}
+.dialog form[hidden]{display:none}
+.dialog label{font-size:12px;color:var(--muted)}
+.dialog input{font:inherit;font-size:14px;color:var(--text);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;padding:9px 10px}
+.tabs{display:flex;gap:6px;background:rgba(255,255,255,.05);padding:4px;border-radius:10px}
+.tabs[hidden]{display:none}
+.tabs button{flex:1;border:0;background:transparent}
+.tabs button[aria-selected="true"]{background:rgba(245,185,66,.18);color:#ffe2a0}
+button.primary{background:var(--gold);color:#1d1605;border-color:transparent;font-weight:700;padding:10px 12px;margin-top:4px}
+button.primary:hover{background:#ffcb63}
+button.primary:disabled{opacity:.6;cursor:wait}
+button.link{background:none;border:0;color:var(--muted);text-decoration:underline;padding:2px;justify-self:start;font-size:12px}
+button.google{background:#fff;color:#1f1f1f;font-weight:700;border-color:#fff}
+button.google:hover{background:#eceff6}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px}
+.or[hidden]{display:none}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.err{color:#ffb3b5;font-size:13px;margin:0;line-height:1.45}
+.err:empty{display:none}
+.ok,.err.ok{color:#aef4d2}
+.errtxt{color:#ffb3b5}
+#saveStatus:empty{display:none}
+#saveStatus{margin:10px 0 0}
+.x{position:absolute;top:10px;right:10px;border:0;background:transparent;font-size:22px;line-height:1;padding:6px 10px}
+#panelToggle{display:none}
+@media (max-width:860px){
+  #panel{display:none;top:116px;left:16px;right:16px;width:auto;max-height:calc(100% - 350px)}
+  body.panel-open #panel{display:grid}
+  #panelToggle{display:block}
+  #topbar{top:12px;right:12px}
+  .acct-label{display:none}
+  .title{top:62px;right:16px;max-width:none}
+  .sub{display:none}
+  .lbl .txt{max-width:150px}
+  .phase{min-height:0}
+}
+@media (max-width:480px){
+  .lbl.roots .keys{display:none}
+  #phaseText{font-size:12px}
+  .controls button{padding:7px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<div id="stage" aria-label="3D tree: fruits are your stresses solved, the trunk is your power goal, the roots are your subconscious mind" role="img"></div>
+<div id="labels" aria-hidden="true"></div>
+
+<header class="title">
+  <p class="eyebrow">Your 30-day goal tree</p>
+  <h1>Reprogram your mind</h1>
+  <p class="sub">Drag to turn the tree, scroll or pinch to zoom. Press play to watch 30 days of daily visualization change the roots, the goal and the fruits.</p>
+</header>
+
+<div id="topbar">
+  <span id="acctLabel" class="acct-label"></span>
+  <button id="acctBtn" type="button" hidden>Sign in</button>
+  <button id="panelToggle" type="button" aria-expanded="false" aria-controls="panel">Steps and meters</button>
+</div>
+
+<aside id="panel">
+  <section class="meters" aria-label="What is happening inside">
+    <h2>Inside your mind today</h2>
+    <div class="meter"><span>Old negative evidence</span><span class="val" id="mRed">94%</span><div class="bar"><i id="bRed" style="background:var(--red)"></i></div></div>
+    <div class="meter"><span>New evidence from visualizing</span><span class="val" id="mMint">6%</span><div class="bar"><i id="bMint" style="background:var(--mint)"></i></div></div>
+    <div class="meter"><span>Fruit ripeness</span><span class="val" id="mRipe">0%</span><div class="bar"><i id="bRipe" style="background:var(--gold)"></i></div></div>
+    <div class="meter"><span>Willpower needed</span><span class="val" id="mWill">100%</span><div class="bar"><i id="bWill" style="background:#8f9ac0"></i></div></div>
+  </section>
+  <section>
+    <h2>The daily process</h2>
+    <ol id="steps">
+      <li>Write your 3 to 5 biggest stresses</li>
+      <li>Flip each into a fruit, written as already solved</li>
+      <li>Pick a power goal you can believe</li>
+      <li>Picture only the fruits, 2 to 5 minutes a day</li>
+      <li>Snap the band and reset when doubt hits</li>
+      <li>Act fast on the small prompts</li>
+    </ol>
+  </section>
+  <section>
+    <h2>Your fruits and goal</h2>
+    <p class="note" id="noteTxt">You are looking at example fruits. Create a free account to put your own goal on the tree.</p>
+    <button id="editBtn" type="button" aria-expanded="false" aria-controls="editForm">Make this tree mine</button>
+    <form id="editForm" hidden>
+      <label for="goalIn">Power goal</label>
+      <textarea id="goalIn" maxlength="300" rows="4"></textarea>
+      <span class="count" id="goalCount" aria-live="polite"></span>
+      <label for="f0">Fruit 1</label><input id="f0" maxlength="80" autocomplete="off">
+      <label for="f1">Fruit 2</label><input id="f1" maxlength="80" autocomplete="off">
+      <label for="f2">Fruit 3</label><input id="f2" maxlength="80" autocomplete="off">
+      <label for="f3">Fruit 4</label><input id="f3" maxlength="80" autocomplete="off">
+      <label for="f4">Fruit 5</label><input id="f4" maxlength="80" autocomplete="off">
+      <label for="f5">Fruit 6</label><input id="f5" maxlength="80" autocomplete="off">
+      <div class="row"><button type="submit" id="saveBtn">Save to the tree</button><button type="button" id="resetBtn">Reset to examples</button><button type="button" id="deleteBtn" hidden>Delete my saved goal</button></div>
+    </form>
+    <p class="note" id="saveStatus" role="status"></p>
+  </section>
+</aside>
+
+<div id="dock">
+  <div class="phase" aria-live="polite">
+    <span id="dayBadge">Day 1</span>
+    <div><strong id="phaseTitle">Write your stresses, flip them into fruits</strong><span id="phaseText">The roots are full of red: years of negative evidence. A big money goal gets rejected, so pick fruits and a goal you can believe.</span></div>
+  </div>
+  <div class="controls">
+    <button id="playBtn" type="button" aria-pressed="true">Pause</button>
+    <div class="track">
+      <input type="range" id="day" min="0" max="30" step="0.01" value="0" aria-label="Day of the 30-day commitment">
+      <div class="ticks"><span>Day 1</span><span>10</span><span>20</span><span>30</span></div>
+    </div>
+    <button id="doubtBtn" type="button">Doubt hits</button>
+    <button id="snapBtn" type="button">Snap and reset</button>
+  </div>
+</div>
+
+<div id="authModal" class="modal" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <button type="button" class="x" id="authClose" aria-label="Close">&times;</button>
+    <h2 id="authTitle">Create your free account</h2>
+    <p class="note" id="authSub">Save your power goal and fruits. They are private to your account.</p>
+    <div class="tabs" id="authTabs" role="tablist">
+      <button type="button" role="tab" id="tabUp" aria-selected="true">Create account</button>
+      <button type="button" role="tab" id="tabIn" aria-selected="false">Sign in</button>
+    </div>
+    <button type="button" id="googleBtn" class="google" hidden>Continue with Google</button>
+    <div class="or" id="orLine" hidden>or</div>
+    <form id="authForm" novalidate>
+      <label for="authEmail">Email</label>
+      <input id="authEmail" type="email" autocomplete="email" required>
+      <label for="authPass">Password</label>
+      <input id="authPass" type="password" autocomplete="new-password" minlength="8" required>
+      <button type="submit" id="authSubmit" class="primary">Create account</button>
+      <button type="button" id="forgotBtn" class="link" hidden>Forgot your password?</button>
+    </form>
+    <form id="newPassForm" hidden novalidate>
+      <label for="newPass">New password</label>
+      <input id="newPass" type="password" autocomplete="new-password" minlength="8" required>
+      <button type="submit" class="primary">Save new password</button>
+    </form>
+    <p class="err" id="authErr" role="alert"></p>
+  </div>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/OrbitControls.js"></script>
+<script src="vendor/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var clamp = function(v,a,b){ return Math.min(b, Math.max(a, v)); };
+  var lerp = function(a,b,t){ return a + (b - a) * t; };
+  var smooth = function(x){ x = clamp(x,0,1); return x*x*(3-2*x); };
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var CFG = window.GOAL_TREE_CONFIG || {};
+  var EXAMPLES = { goal: "$5,000 a month, consistently", fruits: ["Debt paid off","Our marriage is incredible","Time freedom with my family","Bills paid without stress","My team is growing","Peace of mind every night"] };
+  function copyExamples(){ return { goal: EXAMPLES.goal, fruits: EXAMPLES.fruits.slice() }; }
+  function normalize(v){
+    var f = (v && Array.isArray(v.fruits)) ? v.fruits.slice(0, 6) : [];
+    while (f.length < 6) f.push(EXAMPLES.fruits[f.length]);
+    return {
+      goal: (v && typeof v.goal === 'string' && v.goal.trim()) ? v.goal : EXAMPLES.goal,
+      fruits: f.map(function(x, i){ return (typeof x === 'string' && x.trim()) ? x : EXAMPLES.fruits[i]; })
+    };
+  }
+  function loadLocal(){ try { var v = JSON.parse(localStorage.getItem('goal-tree-demo')); if (v) return normalize(v); } catch(e){} return copyExamples(); }
+  function saveLocal(v){ try { localStorage.setItem('goal-tree-demo', JSON.stringify(v)); } catch(e){} }
+  var sb = null;
+  if (window.supabase && CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && CFG.SUPABASE_URL.indexOf('YOUR-') === -1 && CFG.SUPABASE_ANON_KEY.indexOf('YOUR-') === -1) {
+    try { sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY); } catch(e){ sb = null; }
+  }
+  var currentUser = null;
+  var data = sb ? copyExamples() : loadLocal();
+
+  var stage = $('stage');
+  var PH = [
+    { max: 3,  title: "Write your stresses, flip them into fruits", text: "The roots are full of red: years of negative evidence. A big money goal gets rejected, so pick fruits and a goal you can believe.", steps: [0,1,2] },
+    { max: 10, title: "Picture the fruits every day", text: "2 to 5 minutes, headphones on, eyes closed. Feel the fruits as already real. Each session drops new evidence into the roots.", steps: [3] },
+    { max: 20, title: "Hope, then prompts", text: "The pull back gets weaker. Small ideas start to show up: follow up with that person, film that video. Act on them right away.", steps: [3,5] },
+    { max: 99, title: "Certainty", text: "The fruits start to feel normal. Belief carries the action now, not willpower. Keep visualizing and keep acting.", steps: [3,5] }
+  ];
+  var DOUBT = { title: "Doubt hits", text: "A no-show, a comparison, an argument. Your subconscious pulls you back toward the old evidence. Snap the band, go somewhere quiet and picture the fruits for 2 minutes.", steps: [4] };
+  var RESET = { title: "Snap and reset", text: "Back to the fruits. Each reset makes the pull weaker and the fruits easier to believe.", steps: [4,3] };
+
+  var steps = Array.prototype.slice.call(document.querySelectorAll('#steps li'));
+  var lastKey = '';
+  function setPhase(p, key){
+    if (key === lastKey) return;
+    lastKey = key;
+    $('phaseTitle').textContent = p.title;
+    $('phaseText').textContent = p.text;
+    steps.forEach(function(li,i){ li.classList.toggle('on', p.steps.indexOf(i) !== -1); });
+  }
+
+  var day = reduce ? 15 : 0, playing = !reduce, doubt = 0, doubtTarget = 0, resetUntil = 0;
+  var slider = $('day'), playBtn = $('playBtn');
+  slider.value = day;
+  function setPlayLabel(){
+    playBtn.textContent = playing ? 'Pause' : (day >= 30 ? 'Replay' : 'Play');
+    playBtn.setAttribute('aria-pressed', playing ? 'true' : 'false');
+  }
+  setPlayLabel();
+  playBtn.addEventListener('click', function(){ if (!playing && day >= 30) day = 0; playing = !playing; setPlayLabel(); });
+  slider.addEventListener('input', function(){ day = +slider.value; playing = false; setPlayLabel(); });
+  $('doubtBtn').addEventListener('click', function(){ doubtTarget = 1; resetUntil = 0; });
+  $('panelToggle').addEventListener('click', function(){
+    var open = document.body.classList.toggle('panel-open');
+    this.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+
+  var labelsEl = $('labels');
+  function mkLabel(cls){ var d = document.createElement('div'); d.className = 'lbl ' + cls; labelsEl.appendChild(d); return d; }
+  var lblFruit = mkLabel('fruitlbl'), lblTrunk = mkLabel('trunk'), lblRoots = mkLabel('roots');
+  lblFruit.innerHTML = '<div class="in"><i class="dot"></i><div class="txt"><b>Fruits: your stresses, solved</b><span>This is what you picture and feel</span><div class="fcloud"></div></div></div>';
+  lblTrunk.innerHTML = '<div class="in"><i class="dot"></i><div class="txt"><b>Trunk: your power goal</b><span class="goalTxt"></span></div></div>';
+  lblRoots.innerHTML = '<div class="in"><i class="dot"></i><div class="txt"><b>Roots: your subconscious</b><span>Stores everything as emotion</span><span class="keys"><span class="key"><i style="background:var(--red)"></i>old negative evidence</span><span class="key"><i style="background:var(--mint)"></i>new evidence</span></span></div></div>';
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var leaders = document.createElementNS(SVGNS, 'svg'); leaders.id = 'leaders'; labelsEl.insertBefore(leaders, labelsEl.firstChild);
+  var chips = [], lines = [], chipState = [];
+  for (var c=0;c<6;c++){
+    var ch = mkLabel('chip'); ch.innerHTML = '<div class="in"><span class="pill"></span></div>'; chips.push(ch);
+    var ln = document.createElementNS(SVGNS, 'line'); leaders.appendChild(ln); lines.push(ln);
+    chipState.push({ x: 0, y: 0, init: false, side: 'R', back: false, fx: 0, fy: 0 });
+  }
+  function applyText(){
+    lblTrunk.querySelector('.goalTxt').textContent = data.goal;
+    chips.forEach(function(ch,i){ ch.querySelector('.pill').textContent = data.fruits[i]; });
+    var fc = lblFruit.querySelector('.fcloud'); fc.textContent = '';
+    data.fruits.forEach(function(f){ var sp = document.createElement('i'); sp.textContent = f; fc.appendChild(sp); });
+  }
+  applyText();
+
+  var form = $('editForm'), editBtn = $('editBtn'), noteTxt = $('noteTxt'), saveStatus = $('saveStatus');
+  function updCount(){ $('goalCount').textContent = $('goalIn').value.length + ' / 300'; }
+  function fillForm(){ $('goalIn').value = data.goal; for (var i=0;i<6;i++) $('f'+i).value = data.fruits[i]; updCount(); }
+  function openEditor(){
+    form.hidden = false; editBtn.setAttribute('aria-expanded', 'true'); fillForm();
+    if (window.innerWidth <= 860) { document.body.classList.add('panel-open'); $('panelToggle').setAttribute('aria-expanded', 'true'); }
+    $('goalIn').focus();
+  }
+  function closeEditor(){ form.hidden = true; editBtn.setAttribute('aria-expanded', 'false'); }
+  function setStatus(msg, ok){ saveStatus.textContent = msg || ''; saveStatus.className = 'note' + (msg ? (ok ? ' ok' : ' errtxt') : ''); }
+  $('goalIn').addEventListener('input', updCount);
+  editBtn.addEventListener('click', function(){
+    if (sb && !currentUser) { openAuth('up', 'Create a free account to save your own goal and fruits. They stay private to you.'); return; }
+    if (form.hidden) openEditor(); else closeEditor();
+  });
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var g = $('goalIn').value.replace(/\s+/g, ' ').trim();
+    if (g) data.goal = g;
+    for (var i=0;i<6;i++){ var v = $('f'+i).value.replace(/\s+/g, ' ').trim(); if (v) data.fruits[i] = v; }
+    applyText();
+    if (!sb) { saveLocal(data); closeEditor(); setStatus('Saved on this device.', true); return; }
+    if (!currentUser) { openAuth('up'); return; }
+    var btn = $('saveBtn'); btn.disabled = true; setStatus('Saving...', true);
+    var res = await sb.from('goal_trees').upsert({ user_id: currentUser.id, goal: data.goal, fruits: data.fruits, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+    btn.disabled = false;
+    if (res.error) { setStatus('Could not save: ' + res.error.message + ' Please try again.'); return; }
+    closeEditor(); setStatus('Saved to your account.', true);
+  });
+  $('resetBtn').addEventListener('click', function(){ var ex = copyExamples(); data.goal = ex.goal; data.fruits = ex.fruits; fillForm(); applyText(); setStatus('Examples loaded. Press Save to keep them.', true); });
+  var delArmed = false, delTimer = 0;
+  $('deleteBtn').addEventListener('click', async function(){
+    if (!sb || !currentUser) return;
+    var b = this;
+    if (!delArmed) { delArmed = true; b.textContent = 'Press again to delete'; clearTimeout(delTimer); delTimer = setTimeout(function(){ delArmed = false; b.textContent = 'Delete my saved goal'; }, 4000); return; }
+    delArmed = false; clearTimeout(delTimer); b.textContent = 'Delete my saved goal';
+    var res = await sb.from('goal_trees').delete().eq('user_id', currentUser.id);
+    if (res.error) { setStatus('Could not delete: ' + res.error.message); return; }
+    data = copyExamples(); applyText(); closeEditor(); setStatus('Your saved goal and fruits were deleted.', true);
+  });
+
+  var authModal = $('authModal'), authForm = $('authForm'), newPassForm = $('newPassForm'), authErr = $('authErr');
+  var authMode = 'up', lastFocus = null;
+  function siteUrl(){ return location.origin + location.pathname; }
+  function showAuthMsg(msg, ok){ authErr.textContent = msg || ''; authErr.className = ok ? 'err ok' : 'err'; }
+  function friendly(err){
+    var m = (err && err.message) || 'Something went wrong. Please try again.';
+    if (err && (err.status === 429 || /rate limit/i.test(m))) return 'Too many attempts just now. Wait a few minutes and try again.';
+    if (/invalid login credentials/i.test(m)) return 'That email and password do not match. Try again, or use Forgot your password.';
+    if (/already registered|already exists/i.test(m)) return 'That email already has an account. Use the Sign in tab.';
+    if (/email not confirmed/i.test(m)) return 'Please confirm your email first. Check your inbox for the link.';
+    if (/failed to fetch|network/i.test(m)) return 'Could not reach the server. Check your connection and try again.';
+    return m;
+  }
+  function setMode(m){
+    authMode = m;
+    $('tabUp').setAttribute('aria-selected', m === 'up' ? 'true' : 'false');
+    $('tabIn').setAttribute('aria-selected', m === 'in' ? 'true' : 'false');
+    $('authTitle').textContent = m === 'up' ? 'Create your free account' : 'Welcome back';
+    $('authSubmit').textContent = m === 'up' ? 'Create account' : 'Sign in';
+    $('authPass').setAttribute('autocomplete', m === 'up' ? 'new-password' : 'current-password');
+    $('forgotBtn').hidden = m !== 'in';
+    showAuthMsg('');
+  }
+  function openAuth(m, sub){
+    if (!sb) return;
+    lastFocus = document.activeElement;
+    authForm.hidden = false; newPassForm.hidden = true; $('authTabs').hidden = false;
+    $('authSub').textContent = sub || 'Save your power goal and fruits. They are private to your account.';
+    setMode(m || 'up'); authModal.hidden = false; $('authEmail').focus();
+  }
+  function closeAuth(){ authModal.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  $('tabUp').addEventListener('click', function(){ setMode('up'); });
+  $('tabIn').addEventListener('click', function(){ setMode('in'); });
+  $('authClose').addEventListener('click', closeAuth);
+  authModal.addEventListener('click', function(e){ if (e.target === authModal) closeAuth(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !authModal.hidden) closeAuth(); });
+  $('authEmail').addEventListener('input', function(){ showAuthMsg(''); });
+  $('authPass').addEventListener('input', function(){ showAuthMsg(''); });
+  authForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var email = $('authEmail').value.trim(), pass = $('authPass').value;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAuthMsg('Enter a valid email address.'); $('authEmail').focus(); return; }
+    if (pass.length < 8) { showAuthMsg('Use a password with at least 8 characters.'); $('authPass').focus(); return; }
+    var btn = $('authSubmit'); btn.disabled = true;
+    showAuthMsg(authMode === 'up' ? 'Creating your account...' : 'Signing in...', true);
+    var res;
+    try {
+      res = authMode === 'up'
+        ? await sb.auth.signUp({ email: email, password: pass, options: { emailRedirectTo: siteUrl() } })
+        : await sb.auth.signInWithPassword({ email: email, password: pass });
+    } catch(err){ res = { error: err }; }
+    btn.disabled = false;
+    if (res.error) { showAuthMsg(friendly(res.error)); return; }
+    if (authMode === 'up' && !(res.data && res.data.session)) {
+      setMode('in');
+      showAuthMsg('Almost done. Check your email and click the confirmation link, then sign in here.', true);
+      return;
+    }
+    closeAuth();
+  });
+  $('forgotBtn').addEventListener('click', async function(){
+    var email = $('authEmail').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAuthMsg('Type your email above first, then press Forgot your password.'); $('authEmail').focus(); return; }
+    var res = await sb.auth.resetPasswordForEmail(email, { redirectTo: siteUrl() });
+    showAuthMsg(res.error ? friendly(res.error) : 'If that email has an account, a reset link is on its way.', !res.error);
+  });
+  newPassForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var p = $('newPass').value;
+    if (p.length < 8) { showAuthMsg('Use a password with at least 8 characters.'); $('newPass').focus(); return; }
+    var res = await sb.auth.updateUser({ password: p });
+    if (res.error) { showAuthMsg(friendly(res.error)); return; }
+    closeAuth(); setStatus('Your password was updated.', true);
+  });
+  if (sb && CFG.GOOGLE_SIGN_IN) { $('googleBtn').hidden = false; $('orLine').hidden = false; }
+  $('googleBtn').addEventListener('click', async function(){
+    var res = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: siteUrl() } });
+    if (res.error) showAuthMsg(friendly(res.error));
+  });
+
+  var acctBtn = $('acctBtn'), acctLabel = $('acctLabel');
+  function renderAcct(){
+    if (!sb) {
+      acctBtn.hidden = true; acctLabel.textContent = ''; editBtn.textContent = 'Edit my fruits and goal';
+      noteTxt.textContent = 'Demo mode: sign-in turns on once config.js has your Supabase keys. Changes save on this device only.';
+      return;
+    }
+    acctBtn.hidden = false;
+    $('deleteBtn').hidden = !currentUser;
+    if (currentUser) {
+      acctBtn.textContent = 'Sign out'; acctLabel.textContent = currentUser.email || 'Signed in';
+      editBtn.textContent = 'Edit my fruits and goal';
+      noteTxt.textContent = 'This is your tree. Your goal and fruits are saved privately to your account.';
+    } else {
+      acctBtn.textContent = 'Sign in'; acctLabel.textContent = '';
+      editBtn.textContent = 'Make this tree mine';
+      noteTxt.textContent = 'You are looking at example fruits. Create a free account to put your own goal on the tree.';
+    }
+  }
+  acctBtn.addEventListener('click', async function(){
+    if (currentUser) { acctBtn.disabled = true; await sb.auth.signOut(); acctBtn.disabled = false; }
+    else openAuth('in');
+  });
+  async function loadMine(){
+    if (!currentUser) return;
+    setStatus('Loading your tree...', true);
+    var res = await sb.from('goal_trees').select('goal,fruits').eq('user_id', currentUser.id).maybeSingle();
+    if (res.error) { setStatus('Could not load your tree: ' + res.error.message); return; }
+    if (res.data) { data = normalize(res.data); applyText(); setStatus(''); }
+    else { data = copyExamples(); applyText(); setStatus('Welcome. Replace the examples with your own goal and fruits, then press Save.', true); openEditor(); }
+  }
+  if (sb) {
+    sb.auth.onAuthStateChange(function(event, session){
+      var u = session ? session.user : null;
+      var changed = (u ? u.id : null) !== (currentUser ? currentUser.id : null);
+      currentUser = u; renderAcct();
+      if (event === 'PASSWORD_RECOVERY') {
+        lastFocus = document.activeElement;
+        authModal.hidden = false; authForm.hidden = true; $('authTabs').hidden = true; newPassForm.hidden = false;
+        $('authTitle').textContent = 'Set a new password';
+        $('authSub').textContent = 'Choose a new password for ' + (u && u.email ? u.email : 'your account') + '.';
+        showAuthMsg(''); setTimeout(function(){ $('newPass').focus(); }, 0);
+      }
+      if (changed) {
+        if (u) setTimeout(loadMine, 0);
+        else { data = copyExamples(); applyText(); closeEditor(); setStatus(''); }
+      }
+    });
+  }
+  renderAcct();
+
+  var mRed=$('mRed'), mMint=$('mMint'), mRipe=$('mRipe'), mWill=$('mWill');
+  var bRed=$('bRed'), bMint=$('bMint'), bRipe=$('bRipe'), bWill=$('bWill');
+  function pct(v){ return Math.round(v*100) + '%'; }
+  var lastMeter = 0;
+  function updateMeters(red, ripe, will){
+    var now = performance.now(); if (now - lastMeter < 90) return; lastMeter = now;
+    mRed.textContent = pct(red); bRed.style.width = pct(red);
+    mMint.textContent = pct(1-red); bMint.style.width = pct(1-red);
+    mRipe.textContent = pct(ripe); bRipe.style.width = pct(ripe);
+    mWill.textContent = pct(will); bWill.style.width = pct(will);
+  }
+
+  if (!window.THREE || !THREE.OrbitControls) {
+    stage.innerHTML = '<p class="nogl">The 3D view could not load. Check your connection and reload the page.</p>';
+    return;
+  }
+  var renderer;
+  try { renderer = new THREE.WebGLRenderer({ antialias: true }); }
+  catch(e){ stage.innerHTML = '<p class="nogl">This device could not start 3D graphics.</p>'; return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x0b1128, 1);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  stage.appendChild(renderer.domElement);
+
+  var V3 = THREE.Vector3;
+  function L(hex){ return new THREE.Color(hex).convertSRGBToLinear(); }
+  function mulberry(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  var rand = mulberry(20261119);
+
+  var scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(L(0x0b1128), 20, 40);
+  var camera = new THREE.PerspectiveCamera(40, 1, 0.1, 150);
+  camera.position.set(9.6, 5.6, 11.8);
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, 2.2, 0);
+  controls.enableDamping = true; controls.dampingFactor = 0.08; controls.enablePan = false;
+  controls.minDistance = 6; controls.maxDistance = 26; controls.maxPolarAngle = 1.95;
+  controls.autoRotate = !reduce; controls.autoRotateSpeed = 0.45;
+
+  scene.add(new THREE.HemisphereLight(0xc3d2ff, 0x3a2a1a, 0.95));
+  var sun = new THREE.DirectionalLight(0xfff0d8, 1.45);
+  sun.position.set(6, 12, 5); sun.castShadow = true;
+  sun.shadow.mapSize.set(1024, 1024);
+  sun.shadow.camera.left = -7; sun.shadow.camera.right = 7; sun.shadow.camera.top = 9; sun.shadow.camera.bottom = -4;
+  sun.shadow.camera.near = 1; sun.shadow.camera.far = 32;
+  sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.03;
+  scene.add(sun);
+  var rim = new THREE.DirectionalLight(0x8fa8ff, 0.45); rim.position.set(-7, 6, -8); scene.add(rim);
+  var goldLight = new THREE.PointLight(0xf5b942, 0, 9, 2); goldLight.position.set(0, 4.6, 0); scene.add(goldLight);
+
+  function dotTexture(){
+    var cv = document.createElement('canvas'); cv.width = cv.height = 64;
+    var g = cv.getContext('2d'); var r = g.createRadialGradient(32,32,0,32,32,32);
+    r.addColorStop(0,'rgba(255,255,255,1)'); r.addColorStop(0.35,'rgba(255,255,255,.65)'); r.addColorStop(1,'rgba(255,255,255,0)');
+    g.fillStyle = r; g.fillRect(0,0,64,64); return new THREE.CanvasTexture(cv);
+  }
+  var dotTex = dotTexture();
+
+  function barkTexture(){
+    var cv = document.createElement('canvas'); cv.width = 512; cv.height = 256;
+    var g = cv.getContext('2d'), rr = mulberry(7);
+    g.fillStyle = '#5b3d26'; g.fillRect(0,0,512,256);
+    for (var i=0;i<1400;i++){
+      var y = rr()*256, x = rr()*512, w = 30 + rr()*170, h = 1 + rr()*3.5, dark = rr() < 0.55;
+      g.fillStyle = dark ? 'rgba(28,16,8,' + (0.22 + rr()*0.4).toFixed(2) + ')' : 'rgba(150,112,78,' + (0.1 + rr()*0.22).toFixed(2) + ')';
+      g.fillRect(x, y, w, h); g.fillRect(x - 512, y, w, h);
+    }
+    for (var c=0;c<90;c++){
+      var xx = rr()*512, yy = rr()*256;
+      g.strokeStyle = 'rgba(14,7,3,' + (0.45 + rr()*0.35).toFixed(2) + ')'; g.lineWidth = 1 + rr()*2.2;
+      g.beginPath(); g.moveTo(xx, yy);
+      for (var k=0;k<7;k++){ xx += 12 + rr()*26; yy += (rr()-0.5)*7; g.lineTo(xx, yy); }
+      g.stroke();
+    }
+    for (var m=0;m<260;m++){ g.fillStyle = 'rgba(95,110,70,' + (rr()*0.18).toFixed(2) + ')'; g.fillRect(rr()*512, rr()*256, 2 + rr()*8, 2 + rr()*6); }
+    var t = new THREE.CanvasTexture(cv); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding;
+    t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); t.repeat.set(2, 1);
+    return t;
+  }
+  function leafTexture(){
+    var cv = document.createElement('canvas'); cv.width = cv.height = 256;
+    var g = cv.getContext('2d');
+    g.strokeStyle = 'rgb(92,72,46)'; g.lineWidth = 3; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(128, 252); g.quadraticCurveTo(118, 170, 130, 58); g.stroke();
+    var leaves = [[128,64,0.05,1],[98,118,-0.75,0.92],[160,122,0.72,0.92],[92,176,-0.95,0.82],[164,182,0.9,0.82],[126,140,-0.12,0.86],[112,214,-1.2,0.7],[146,218,1.15,0.7]];
+    leaves.forEach(function(Lf){
+      g.save(); g.translate(Lf[0], Lf[1]); g.rotate(Lf[2]);
+      var s = Lf[3], len = 80*s, wid = 29*s;
+      var grd = g.createLinearGradient(-wid, 0, wid, 0);
+      grd.addColorStop(0, '#c4d9ad'); grd.addColorStop(0.48, '#f4f9ec'); grd.addColorStop(0.52, '#e6f0d9'); grd.addColorStop(1, '#aac692');
+      g.fillStyle = grd;
+      g.beginPath(); g.moveTo(0, len*0.5);
+      g.bezierCurveTo(wid, len*0.28, wid*0.85, -len*0.32, 0, -len*0.5);
+      g.bezierCurveTo(-wid*0.85, -len*0.32, -wid, len*0.28, 0, len*0.5); g.fill();
+      g.strokeStyle = 'rgba(118,140,88,.85)'; g.lineWidth = 1.4;
+      g.beginPath(); g.moveTo(0, len*0.5); g.lineTo(0, -len*0.44); g.stroke();
+      g.lineWidth = 0.8; g.strokeStyle = 'rgba(118,140,88,.5)';
+      for (var v=-0.3; v<0.4; v+=0.14){ g.beginPath(); g.moveTo(0, len*v); g.lineTo(wid*0.6, len*(v-0.12)); g.moveTo(0, len*v); g.lineTo(-wid*0.6, len*(v-0.12)); g.stroke(); }
+      g.restore();
+    });
+    var t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding; return t;
+  }
+  var barkTex = barkTexture(), leafTex = leafTexture();
+
+  (function stars(){
+    var n = 800, p = new Float32Array(n*3), rs = mulberry(3);
+    for (var i=0;i<n;i++){
+      var u = rs()*2-1, th = rs()*Math.PI*2, r = 52+rs()*12, s = Math.sqrt(1-u*u);
+      p[i*3] = r*s*Math.cos(th); p[i*3+1] = Math.abs(r*u)*0.9 - 4; p[i*3+2] = r*s*Math.sin(th);
+    }
+    var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p,3));
+    scene.add(new THREE.Points(g, new THREE.PointsMaterial({ size: 0.42, map: dotTex, color: L(0xa7b6ea), transparent: true, opacity: 0.85, depthWrite: false, fog: false, toneMapped: false })));
+  })();
+
+  var R = 4.4, D = 3;
+  var soil = new THREE.Mesh(new THREE.CylinderGeometry(R,R,D,80,1,true), new THREE.MeshStandardMaterial({ color: L(0x6e4527), transparent: true, opacity: 0.26, side: THREE.DoubleSide, depthWrite: false, roughness: 1 }));
+  soil.position.y = -D/2; scene.add(soil);
+  var soilBase = new THREE.Mesh(new THREE.CircleGeometry(R,80), new THREE.MeshStandardMaterial({ color: L(0x3d2614), transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide }));
+  soilBase.rotation.x = -Math.PI/2; soilBase.position.y = -D; scene.add(soilBase);
+  var grassTop = new THREE.Mesh(new THREE.CircleGeometry(R,80), new THREE.MeshStandardMaterial({ color: L(0x24552f), transparent: true, opacity: 0.42, depthWrite: false, side: THREE.DoubleSide, roughness: 1 }));
+  grassTop.rotation.x = -Math.PI/2; grassTop.position.y = 0.002; scene.add(grassTop);
+  var shadowCatcher = new THREE.Mesh(new THREE.CircleGeometry(R,80), new THREE.ShadowMaterial({ opacity: 0.38 }));
+  shadowCatcher.rotation.x = -Math.PI/2; shadowCatcher.position.y = 0.006; shadowCatcher.receiveShadow = true; scene.add(shadowCatcher);
+  function ring(y, color, op){
+    var pts = []; for (var i=0;i<=120;i++){ var a = i/120*Math.PI*2; pts.push(new V3(Math.cos(a)*R, y, Math.sin(a)*R)); }
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: L(color), transparent: true, opacity: op })));
+  }
+  ring(0, 0x7fbf8f, 0.35); ring(-D, 0xa0784e, 0.4);
+
+  (function grassBlades(){
+    var gg = new THREE.BufferGeometry();
+    gg.setAttribute('position', new THREE.Float32BufferAttribute([-0.014,0,0, 0.014,0,0, 0.004,0.5,0.01, -0.004,0.5,0.01, 0,0.85,0.03], 3));
+    gg.setIndex([0,1,2, 0,2,3, 3,2,4]); gg.computeVertexNormals();
+    var N = 3200, mesh = new THREE.InstancedMesh(gg, new THREE.MeshLambertMaterial({ side: THREE.DoubleSide }), N);
+    var dm = new THREE.Object3D(), rg = mulberry(5), col = new THREE.Color();
+    var greens = [0x3f7a3a, 0x4b8a40, 0x5a9645, 0x356b33, 0x6d9f4c, 0x7a9a50];
+    for (var i=0;i<N;i++){
+      var rr2 = Math.sqrt(rg())*(R-0.08), a = rg()*Math.PI*2;
+      if (rr2 < 0.5) rr2 = 0.5 + rg()*0.3;
+      dm.position.set(Math.cos(a)*rr2, 0, Math.sin(a)*rr2);
+      dm.rotation.set((rg()-0.5)*0.5, rg()*Math.PI*2, (rg()-0.5)*0.5);
+      var sc = 0.18 + rg()*0.22; dm.scale.set(1, sc, 1);
+      dm.updateMatrix(); mesh.setMatrixAt(i, dm.matrix);
+      col.copy(L(greens[Math.floor(rg()*greens.length)])).multiplyScalar(0.8 + rg()*0.35); mesh.setColorAt(i, col);
+    }
+    mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    scene.add(mesh);
+  })();
+
+  function taperedTube(curve, segs, radial, r0, r1, flare){
+    var geo = new THREE.TubeGeometry(curve, segs, 1, radial, false);
+    var pos = geo.attributes.position, c = new V3(), v = new V3();
+    for (var i=0;i<=segs;i++){
+      var t = i/segs; curve.getPointAt(t, c);
+      var r = lerp(r0, r1, Math.pow(t, 0.9)) + (flare ? flare*Math.exp(-t*12) : 0);
+      for (var j=0;j<=radial;j++){
+        var idx = i*(radial+1) + j; v.fromBufferAttribute(pos, idx); v.sub(c).multiplyScalar(r).add(c); pos.setXYZ(idx, v.x, v.y, v.z);
+      }
+    }
+    pos.needsUpdate = true; return geo;
+  }
+
+  var rootMat = new THREE.MeshStandardMaterial({ map: barkTex, bumpMap: barkTex, bumpScale: 0.025, color: L(0xd2a07c), roughness: 0.95, emissive: L(0x1a0c04) });
+  var curves = [];
+  function addRoot(points, r0, r1, main){
+    var cv = new THREE.CatmullRomCurve3(points);
+    scene.add(new THREE.Mesh(taperedTube(cv, 40, 9, r0, r1, 0), rootMat));
+    curves.push({ c: cv, main: main }); return cv;
+  }
+  var NR = 8;
+  for (var i=0;i<NR;i++){
+    var a = i/NR*Math.PI*2 + (rand()-0.5)*0.4;
+    var len = 2.2 + rand()*1.5, dep = 1.6 + rand()*1.1;
+    var ca = Math.cos(a), sa = Math.sin(a), wob = (rand()-0.5)*0.6;
+    var mc = addRoot([new V3(ca*0.15,0.08,sa*0.15), new V3(ca*0.55,-0.32,sa*0.55), new V3(ca*len*0.5 + wob*sa, -dep*0.55, sa*len*0.5 - wob*ca), new V3(ca*len, -dep, sa*len)], 0.16, 0.02, true);
+    for (var sb=0; sb<2; sb++){
+      var s0 = mc.getPointAt(0.35 + sb*0.3), b = a + (sb ? 0.75 : -0.75)*(0.7 + rand()*0.5), cb = Math.cos(b), sn = Math.sin(b);
+      addRoot([s0, new V3(s0.x+cb*0.45, s0.y-0.25, s0.z+sn*0.45), new V3(s0.x+cb*0.95, s0.y-0.6-rand()*0.3, s0.z+sn*0.95)], 0.055, 0.012, false);
+    }
+  }
+
+  var RED = L(0xff5a5f), MINT = L(0x5ee6a8);
+  var orbGeo = new THREE.SphereGeometry(0.085, 14, 12), haloGeo = new THREE.SphereGeometry(0.2, 12, 10);
+  var orbs = [], NO = 64, order = [];
+  for (var k=0;k<NO;k++) order.push(k);
+  for (var k2=NO-1;k2>0;k2--){ var j = Math.floor(Math.random()*(k2+1)); var tmpo = order[k2]; order[k2] = order[j]; order[j] = tmpo; }
+  for (var o=0;o<NO;o++){
+    var rc = curves[o % curves.length].c;
+    var p = rc.getPoint(0.25 + rand()*0.75);
+    p.x += (rand()-0.5)*0.55; p.z += (rand()-0.5)*0.55;
+    p.y = Math.min(-0.2, p.y + (rand()-0.5)*0.4);
+    var rr = Math.hypot(p.x, p.z); if (rr > R-0.25){ p.x *= (R-0.25)/rr; p.z *= (R-0.25)/rr; }
+    p.y = Math.max(p.y, -D+0.15);
+    var m = new THREE.Mesh(orbGeo, new THREE.MeshBasicMaterial({ color: RED.clone(), toneMapped: false })); m.position.copy(p);
+    var h = new THREE.Mesh(haloGeo, new THREE.MeshBasicMaterial({ color: RED.clone(), transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })); h.position.copy(p);
+    scene.add(m); scene.add(h);
+    orbs.push({ m: m, h: h, th: (order[o]+0.5)/NO, mix: 0, pop: 0, ph: Math.random()*6.28 });
+  }
+
+  var tree = new THREE.Group(); scene.add(tree);
+  var barkMat = new THREE.MeshStandardMaterial({ map: barkTex, bumpMap: barkTex, bumpScale: 0.035, color: 0xffffff, roughness: 0.95 });
+  function addTube(curve, segs, radial, r0, r1, flare){
+    var mesh = new THREE.Mesh(taperedTube(curve, segs, radial, r0, r1, flare), barkMat);
+    mesh.castShadow = true; mesh.receiveShadow = true; tree.add(mesh); return mesh;
+  }
+  var TRUNK_H = 3.4;
+  var trunkCurve = new THREE.CatmullRomCurve3([new V3(0,0,0), new V3(0.07,0.9,0.03), new V3(-0.08,1.8,0.07), new V3(0.06,2.7,-0.05), new V3(0.02,TRUNK_H,0.01)]);
+  addTube(trunkCurve, 36, 16, 0.38, 0.17, 0.32);
+  for (var fl=0; fl<5; fl++){
+    var fa2 = fl/5*Math.PI*2 + 0.4, fc = Math.cos(fa2), fs = Math.sin(fa2);
+    addTube(new THREE.CatmullRomCurve3([new V3(fc*0.05,0.75,fs*0.05), new V3(fc*0.3,0.18,fs*0.3), new V3(fc*0.62,-0.02,fs*0.62)]), 12, 8, 0.12, 0.05, 0);
+  }
+
+  function perp(dir){ var ax = Math.abs(dir.y) < 0.9 ? new V3(0,1,0) : new V3(1,0,0); return new V3().crossVectors(dir, ax).normalize(); }
+  var clusters = [], tips = [];
+  function branch(start, dir, len, r, depth){
+    var side = perp(dir).applyAxisAngle(dir, rand()*Math.PI*2);
+    var mid = start.clone().addScaledVector(dir, len*0.5).addScaledVector(side, len*0.1*(rand()-0.3)); mid.y += len*0.06;
+    var end = start.clone().addScaledVector(dir, len); end.y += len*(0.1 - 0.05*depth);
+    var cv = new THREE.CatmullRomCurve3([start, mid, end]);
+    addTube(cv, depth === 0 ? 18 : 10, depth === 0 ? 10 : 7, r, r*0.55, 0);
+    if (depth >= 2){ clusters.push({ c: end.clone(), r: 0.6 + rand()*0.22, n: 62 }); tips.push(end.clone()); return; }
+    var n = depth === 0 ? 3 : 2;
+    for (var i=0;i<n;i++){
+      var t = Math.min(0.97, 0.5 + 0.45*(n === 1 ? 1 : i/(n-1)) + (rand()-0.5)*0.08);
+      var sp = cv.getPointAt(t), tan = cv.getTangentAt(t);
+      var axis = perp(tan).applyAxisAngle(tan, rand()*Math.PI*2 + i*Math.PI);
+      var nd = tan.clone().applyAxisAngle(axis, 0.45 + rand()*0.35); nd.y += 0.22; nd.normalize();
+      branch(sp, nd, len*(0.6 + rand()*0.12), r*0.62, depth+1);
+    }
+    if (depth === 1) clusters.push({ c: cv.getPointAt(0.55), r: 0.5, n: 34 });
+  }
+  var NB = 6;
+  for (var bi=0; bi<NB; bi++){
+    var ht = 2.0 + bi/NB*1.25;
+    var st0 = trunkCurve.getPointAt(ht/TRUNK_H);
+    var ang = bi*2.39996 + 0.3;
+    var d0 = new V3(Math.cos(ang)*0.8, 0.58 + rand()*0.14, Math.sin(ang)*0.8).normalize();
+    branch(st0, d0, 1.7 - bi*0.07, 0.15 - bi*0.008, 0);
+  }
+  branch(trunkCurve.getPointAt(1), new V3(0.06,1,0.03).normalize(), 1.35, 0.15, 1);
+
+  var cc = new V3(); clusters.forEach(function(cl){ cc.add(cl.c); }); cc.divideScalar(clusters.length);
+  var canopyR = 0, canopyTop = 0;
+  clusters.forEach(function(cl){ canopyR = Math.max(canopyR, Math.hypot(cl.c.x - cc.x, cl.c.z - cc.z) + cl.r); canopyTop = Math.max(canopyTop, cl.c.y + cl.r); });
+
+  var leafGeo = new THREE.PlaneGeometry(0.44, 0.44);
+  var leafMat = new THREE.MeshLambertMaterial({ map: leafTex, alphaTest: 0.45, side: THREE.DoubleSide });
+  var totalLeaves = clusters.reduce(function(s,cl){ return s + cl.n; }, 0);
+  var leaves = new THREE.InstancedMesh(leafGeo, leafMat, totalLeaves);
+  leaves.castShadow = true;
+  leaves.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: leafTex, alphaTest: 0.45 });
+  var leafGreens = [0x3d7a35, 0x4a8a3c, 0x5a9a44, 0x356d30, 0x68a84a, 0x7cb24e, 0x2f6430, 0x8fb85a].map(L);
+  var mats = [], dummy = new THREE.Object3D(), dirv = new V3(), lc = new THREE.Color();
+  clusters.forEach(function(cl){
+    for (var i=0;i<cl.n;i++){
+      dirv.set(rand()*2-1, rand()*2-1, rand()*2-1); if (dirv.lengthSq() < 0.01) dirv.set(0,1,0); dirv.normalize();
+      var rr3 = cl.r*(0.35 + 0.65*Math.pow(rand(), 0.6));
+      dummy.position.set(cl.c.x + dirv.x*rr3, cl.c.y + dirv.y*rr3*0.78, cl.c.z + dirv.z*rr3);
+      dummy.rotation.set(rand()*Math.PI*2, rand()*Math.PI*2, rand()*Math.PI*2);
+      dummy.scale.setScalar(0.75 + rand()*0.55);
+      dummy.updateMatrix();
+      lc.copy(leafGreens[Math.floor(rand()*leafGreens.length)]).multiplyScalar(0.85 + rand()*0.3);
+      mats.push({ m: dummy.matrix.clone(), c: lc.clone() });
+    }
+  });
+  for (var sh=mats.length-1; sh>0; sh--){ var jj = Math.floor(rand()*(sh+1)); var tm = mats[sh]; mats[sh] = mats[jj]; mats[jj] = tm; }
+  mats.forEach(function(it, i){ leaves.setMatrixAt(i, it.m); leaves.setColorAt(i, it.c); });
+  leaves.instanceMatrix.needsUpdate = true; if (leaves.instanceColor) leaves.instanceColor.needsUpdate = true;
+  tree.add(leaves);
+  var LEAF_VIBRANT = new THREE.Color(1,1,1), LEAF_DULL = new THREE.Color(0.86,0.74,0.46), LEAF_DOUBT = new THREE.Color(0.62,0.5,0.36);
+
+  var UNRIPE = L(0x8db368), RIPE = L(0xf5b437);
+  var fruitGeo = new THREE.SphereGeometry(0.21, 28, 20), fruitHaloGeo = new THREE.SphereGeometry(0.42, 16, 12);
+  var stemGeo = new THREE.CylinderGeometry(0.01, 0.016, 0.16, 6);
+  var stemMat = new THREE.MeshStandardMaterial({ color: L(0x5a4026), roughness: 0.9 });
+  var candidates = tips.map(function(tp){ return { p: tp, ang: Math.atan2(tp.z - cc.z, tp.x - cc.x), hd: Math.hypot(tp.x - cc.x, tp.z - cc.z) }; });
+  var picked = [];
+  for (var sec=0; sec<6; sec++){
+    var lo = -Math.PI + sec*(Math.PI*2/6), hi = lo + Math.PI*2/6, best = null, bestS = -1e9;
+    candidates.forEach(function(cd){
+      if (cd.ang < lo || cd.ang >= hi || picked.indexOf(cd) !== -1) return;
+      var sc2 = cd.hd - Math.abs(cd.p.y - (cc.y - 0.2))*0.5; if (sc2 > bestS){ bestS = sc2; best = cd; }
+    });
+    if (!best) candidates.forEach(function(cd){ if (picked.indexOf(cd) === -1){ var sc3 = cd.hd; if (sc3 > bestS){ bestS = sc3; best = cd; } } });
+    picked.push(best);
+  }
+  var fruits = [];
+  picked.forEach(function(cd){
+    var out = new V3(cd.p.x - cc.x, 0, cd.p.z - cc.z); if (out.lengthSq() < 0.001) out.set(1,0,0); out.normalize();
+    var grp = new THREE.Group(); grp.position.copy(cd.p).addScaledVector(out, 0.62); grp.position.y -= 0.42; tree.add(grp);
+    var stem = new THREE.Mesh(stemGeo, stemMat); stem.position.y = 0.26; grp.add(stem);
+    var mat = new THREE.MeshStandardMaterial({ color: UNRIPE.clone(), emissive: L(0xf5b437), emissiveIntensity: 0, roughness: 0.42, metalness: 0.02 });
+    var fm = new THREE.Mesh(fruitGeo, mat); fm.scale.set(1, 1.1, 1); fm.castShadow = true; grp.add(fm);
+    var fh = new THREE.Mesh(fruitHaloGeo, new THREE.MeshBasicMaterial({ color: L(0xf5b437), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })); grp.add(fh);
+    fruits.push({ g: grp, f: fm, h: fh, mat: mat });
+  });
+
+  var NP = 220, pPos = new Float32Array(NP*3);
+  var pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  var pts = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 0.16, map: dotTex, color: L(0x6af0b4), transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  scene.add(pts);
+  var mains = curves.filter(function(c){ return c.main; }).map(function(c){ return c.c; });
+  var parts = [];
+  for (var q=0;q<NP;q++){
+    parts.push({ c: mains[q % mains.length], u: Math.random(), sp: 0.08 + Math.random()*0.07,
+      target: clusters[Math.floor(Math.random()*clusters.length)].c, jx: (Math.random()-0.5)*0.14, jz: (Math.random()-0.5)*0.14 });
+  }
+  var tv = new V3(), ta = new V3();
+  function partPos(pt, gy, gx){
+    var u = pt.u;
+    if (u < 0.4) { pt.c.getPoint(1 - u/0.4, tv); return tv; }
+    if (u < 0.72) { trunkCurve.getPointAt(((u-0.4)/0.32)*0.82, tv); tv.x += pt.jx; tv.z += pt.jz; }
+    else { var k3 = (u-0.72)/0.28; trunkCurve.getPointAt(0.82, ta); tv.copy(ta).lerp(pt.target, k3); tv.y += Math.sin(k3*Math.PI)*0.3; }
+    tv.set(tv.x*gx, tv.y*gy, tv.z*gx); return tv;
+  }
+
+  var snapRing = new THREE.Mesh(new THREE.TorusGeometry(1, 0.035, 8, 96), new THREE.MeshBasicMaterial({ color: L(0xf5b942), transparent: true, opacity: 0, depthWrite: false, toneMapped: false }));
+  snapRing.rotation.x = Math.PI/2; snapRing.position.y = 0.08; scene.add(snapRing);
+  var snapT = -1;
+  $('snapBtn').addEventListener('click', function(){ doubtTarget = 0; snapT = 0; resetUntil = performance.now() + 3800; });
+
+  var pv = new V3(), wv = new V3(), ev = new V3(), cen = new V3(), camRight = new V3();
+  function toScreen(vec, W, Hh){ pv.copy(vec).project(camera); return { x: (pv.x*0.5+0.5)*W, y: (-pv.y*0.5+0.5)*Hh }; }
+  function place(el, world){
+    pv.copy(world).project(camera);
+    if (pv.z > 1 || pv.z < -1) { el.style.visibility = 'hidden'; return false; }
+    var w = stage.clientWidth, hgt = stage.clientHeight;
+    el.style.visibility = '';
+    el.style.transform = 'translate(' + ((pv.x*0.5+0.5)*w).toFixed(1) + 'px,' + ((-pv.y*0.5+0.5)*hgt).toFixed(1) + 'px)';
+    return true;
+  }
+
+  function resize(){
+    var w = stage.clientWidth || window.innerWidth, hgt = stage.clientHeight || window.innerHeight;
+    renderer.setSize(w, hgt, false); camera.aspect = w/hgt;
+    camera.setViewOffset(w, hgt, 0, Math.round(hgt*0.06), w, hgt);
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  if (camera.aspect < 0.85) camera.position.multiplyScalar(1.45);
+  window.addEventListener('resize', resize);
+
+  var SPEED = 30/26;
+  var clock = new THREE.Clock();
+  function frame(){
+    var dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+    if (playing) { day += dt*SPEED; if (day >= 30) { day = 30; playing = false; setPlayLabel(); } slider.value = day; }
+    doubt = lerp(doubt, doubtTarget, 1 - Math.pow(0.03, dt));
+    var prog = smooth(day/30);
+    var g = (0.06 + 0.86*prog) * (1 - 0.45*doubt);
+    var grow = 0.58 + 0.42*prog;
+    var gx = 0.78 + 0.22*grow;
+    tree.scale.set(gx, grow, gx);
+    if (!reduce) { tree.rotation.z = Math.sin(t*0.7)*0.006; tree.rotation.x = Math.sin(t*0.53 + 1.3)*0.004; }
+
+    leaves.count = Math.max(1, Math.floor(totalLeaves * (0.32 + 0.68*prog) * (1 - 0.18*doubt)));
+    leafMat.color.copy(LEAF_DULL).lerp(LEAF_VIBRANT, prog).lerp(LEAF_DOUBT, doubt*0.75);
+
+    var red = 0;
+    for (var i=0;i<orbs.length;i++){
+      var ob = orbs[i], target = g > ob.th ? 1 : 0, prev = ob.mix;
+      ob.mix = lerp(ob.mix, target, 1 - Math.pow(0.002, dt));
+      if (target === 1 && prev < 0.5 && ob.mix >= 0.5) ob.pop = 1;
+      ob.pop = Math.max(0, ob.pop - dt*2.2);
+      ob.m.material.color.copy(RED).lerp(MINT, ob.mix); ob.h.material.color.copy(ob.m.material.color);
+      var sc = 1 + ob.pop*1.3 + Math.sin(t*2 + ob.ph)*0.07;
+      ob.m.scale.setScalar(sc); ob.h.scale.setScalar(sc*(1 + ob.pop)); ob.h.material.opacity = 0.18 + ob.pop*0.45;
+      if (ob.mix < 0.5) red++;
+    }
+
+    var ripeBase = clamp((day-4)/24, 0, 1), ripeSum = 0;
+    for (var fi=0; fi<fruits.length; fi++){
+      var fr = fruits[fi], r = clamp(ripeBase*1.15 - fi*0.025, 0, 1) * (1 - 0.4*doubt);
+      ripeSum += r;
+      var fsc = 0.4 + 0.6*r;
+      fr.g.scale.set(fsc/gx, fsc/grow, fsc/gx);
+      fr.g.rotation.z = Math.sin(t*1.1 + fi)*0.05;
+      fr.mat.color.copy(UNRIPE).lerp(RIPE, r); fr.mat.emissiveIntensity = r*0.35;
+      fr.h.scale.setScalar(1 + 0.07*Math.sin(t*2.4 + fi)); fr.h.material.opacity = r*0.22;
+    }
+    var ripe = ripeSum/6;
+    goldLight.intensity = ripe*1.4;
+    goldLight.position.set(cc.x*gx, cc.y*grow, cc.z*gx);
+
+    var active = Math.floor(NP * clamp((g-0.1)/0.82, 0, 1) * (1 - doubt*0.85));
+    for (var pi=0; pi<NP; pi++){
+      var pt = parts[pi]; pt.u += dt*pt.sp; if (pt.u > 1) pt.u -= 1;
+      var v = partPos(pt, grow, gx); pPos[pi*3] = v.x; pPos[pi*3+1] = v.y; pPos[pi*3+2] = v.z;
+    }
+    pGeo.attributes.position.needsUpdate = true; pGeo.setDrawRange(0, active);
+
+    if (snapT >= 0){
+      snapT += dt; var sk = snapT/1.3;
+      snapRing.scale.setScalar(0.3 + sk*4.6); snapRing.material.opacity = Math.max(0, 0.95*(1-sk));
+      if (sk >= 1){ snapT = -1; snapRing.material.opacity = 0; }
+    }
+
+    controls.update();
+    renderer.render(scene, camera);
+
+    var badge = $('dayBadge');
+    badge.textContent = 'Day ' + Math.max(1, Math.ceil(day - 0.001));
+    if (doubtTarget === 1) { badge.classList.add('doubt'); setPhase(DOUBT, 'doubt'); }
+    else {
+      badge.classList.remove('doubt');
+      if (performance.now() < resetUntil) setPhase(RESET, 'reset');
+      else { var idx = 0; while (day >= PH[idx].max) idx++; setPhase(PH[idx], 'p' + idx); }
+    }
+    updateMeters(red/NO, ripe, clamp(1 - (g-0.06)/0.86, 0, 1));
+
+    var W = stage.clientWidth, Hh = stage.clientHeight;
+    cen.set(cc.x*gx, cc.y*grow, cc.z*gx);
+    camRight.setFromMatrixColumn(camera.matrixWorld, 0);
+    place(lblFruit, wv.set(cc.x*gx, (canopyTop + 0.15)*grow, cc.z*gx));
+    place(lblTrunk, wv.set(0.3*gx, 1.35*grow, 0));
+    var rA = toScreen(wv.set(0, -0.35, 0).addScaledVector(camRight, -3.6), W, Hh), rw = lblRoots.offsetWidth || 200;
+    if (rA.x - rw < 8) {
+      lblRoots.classList.add('flip');
+      lblRoots.style.transform = 'translate(' + Math.min(Math.max(rA.x, 14), W - rw - 8).toFixed(1) + 'px,' + rA.y.toFixed(1) + 'px)';
+    } else {
+      lblRoots.classList.remove('flip');
+      lblRoots.style.transform = 'translate(' + rA.x.toFixed(1) + 'px,' + rA.y.toFixed(1) + 'px)';
+    }
+    var tw = lblTrunk.offsetWidth || 200, tl = lblTrunk.style.transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
+    if (tl && (+tl[1] + tw > W - 8)) lblTrunk.style.transform = 'translate(' + (W - tw - 8).toFixed(1) + 'px,' + tl[2] + 'px)';
+    var cS = toScreen(cen, W, Hh), cx = cS.x;
+    var eS = toScreen(ev.copy(cen).addScaledVector(camRight, canopyR*gx), W, Hh);
+    var rpx = Math.abs(eS.x - cx);
+    var panelEl = $('panel'), pr = panelEl.getClientRects().length ? panelEl.getBoundingClientRect() : null;
+    var cdist = cen.distanceTo(camera.position), items = [];
+    for (var ci=0; ci<6; ci++){
+      fruits[ci].f.getWorldPosition(wv);
+      var sp = toScreen(wv, W, Hh);
+      items.push({ i: ci, x: sp.x, y: sp.y, back: wv.distanceTo(camera.position) > cdist + 0.4 });
+    }
+    ['L','R'].forEach(function(side){
+      var list = items.filter(function(it){ return side === 'L' ? it.x < cx : it.x >= cx; }).sort(function(a,b){ return a.y - b.y; });
+      if (!list.length) return;
+      var ys = list.map(function(it){ return it.y; });
+      for (var k=1;k<ys.length;k++) if (ys[k] < ys[k-1] + 30) ys[k] = ys[k-1] + 30;
+      var shift = (list.reduce(function(s,it){ return s + it.y; }, 0) - ys.reduce(function(s,y){ return s + y; }, 0)) / ys.length;
+      list.forEach(function(it,k){
+        var cw = chips[it.i].offsetWidth || 120;
+        var tx = side === 'L' ? Math.max(cx - rpx - 22, cw + 12) : Math.min(cx + rpx + 22, (pr ? pr.left : W) - cw - 12), ty = ys[k] + shift, st = chipState[it.i];
+        if (!st.init){ st.x = tx; st.y = ty; st.init = true; } else { st.x = lerp(st.x, tx, 0.18); st.y = lerp(st.y, ty, 0.18); }
+        st.side = side; st.back = it.back; st.fx = it.x; st.fy = it.y;
+      });
+    });
+    var chipOp = 0.65 + 0.35*clamp(ripeBase*1.15, 0, 1);
+    for (var cj=0; cj<6; cj++){
+      var st2 = chipState[cj], op = (st2.back ? 0.45 : 1) * chipOp;
+      chips[cj].style.transform = 'translate(' + st2.x.toFixed(1) + 'px,' + st2.y.toFixed(1) + 'px) ' + (st2.side === 'L' ? 'translate(-100%,-50%)' : 'translate(0,-50%)');
+      chips[cj].style.opacity = op.toFixed(2);
+      var ln2 = lines[cj];
+      ln2.setAttribute('x1', st2.fx.toFixed(1)); ln2.setAttribute('y1', st2.fy.toFixed(1));
+      ln2.setAttribute('x2', (st2.x + (st2.side === 'L' ? 2 : -2)).toFixed(1)); ln2.setAttribute('y2', st2.y.toFixed(1));
+      ln2.style.opacity = (op*0.7).toFixed(2);
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
