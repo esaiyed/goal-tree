@@ -14,6 +14,7 @@ A public website with the 3D goal tree. Anyone can create a free account with th
 | `supabase/update-checkins.sql` | Adds daily check-ins to a project set up before check-ins existed (run once) |
 | `netlify.toml` | Hosting settings for Netlify |
 | `vendor/` | The 3D and sign-in libraries, bundled so the site doesn't depend on outside servers |
+| `music/` | The two visualization tracks (trimmed to 2.5 minutes, 128 kbps) |
 
 Until `config.js` has real keys, the site runs in **demo mode**: the tree works, but there's no sign-in and changes only save on that device.
 
@@ -76,6 +77,15 @@ If you ran `setup.sql` before check-ins were added, run `supabase/update-checkin
 ## Making changes later
 
 Open a chat with Claude (with GitHub connected) and describe the change, for example: "On the goal tree site, add a daily check-in button." Claude edits the files and pushes them to the repository, and Netlify republishes the site.
+
+## Music
+
+The 2-minute visualization plays one of two tracks. People pick with the Music button, which cycles Deep meditation, Deep ambient and off, and their choice is remembered on their device.
+
+- "Deep Meditation" by AtlasAudio, from Pixabay
+- "Deep Ambient" by AvelineMusic, from Pixabay
+
+Both are used under the Pixabay Content License. To swap a track, replace the file in `music/` with the same name, or ask Claude to add a new one.
 
 ## Privacy
 

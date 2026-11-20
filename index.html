@@ -170,6 +170,10 @@ button.google:hover{background:#eceff6}
 .vizprompt[hidden]{display:none}
 .vizrow{justify-content:center}
 #vizSound[hidden]{display:none}
+#vizSound{min-width:190px}
+#saveBtn{background:var(--gold);color:#1d1605;border-color:transparent;font-weight:700}
+#saveBtn:hover{background:#ffcb63}
+#saveBtn:disabled{opacity:.6;cursor:wait}
 @media (prefers-reduced-motion: reduce){ .rarc,.vizfruit{transition:none} }
 #panelToggle{display:none}
 @media (max-width:860px){
@@ -342,8 +346,8 @@ button.google:hover{background:#eceff6}
     </div>
     <p class="vizgoal" id="vizGoal"></p>
     <p class="vizfruit" id="vizFruit" aria-live="polite"></p>
-    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? A soft chime plays when each new fruit comes up and when your 2 minutes are done.</p>
-    <div class="row vizrow"><button type="button" class="primary" id="vizStart">Start 2 minutes</button><button type="button" id="vizSound" aria-pressed="true">Music: on</button></div>
+    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? A soft chime plays when each new fruit comes up and when your 2 minutes are done. Headphones help.</p>
+    <div class="row vizrow"><button type="button" class="primary" id="vizStart">Start 2 minutes</button><button type="button" id="vizSound" aria-pressed="true">Music: Deep meditation</button></div>
     <p class="err" id="vizErr" role="alert"></p>
   </div>
 </div>
@@ -689,31 +693,46 @@ button.google:hover{background:#eceff6}
     renderDock();
   });
 
-  var actx = null, master = null, voices = [];
+  var actx = null;
   function audioCtx(){
     try { if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); }
     catch(e){ actx = null; }
     return actx;
   }
+  var TRACKS = [
+    { name: 'Deep meditation', src: 'music/deep-meditation.mp3' },
+    { name: 'Deep ambient', src: 'music/deep-ambient.mp3' }
+  ];
+  var trackIdx = 0, audioEl = null, audioSrcNode = null, musicGain = null, MUSIC_LEVEL = 0.75;
+  function ensureAudio(){
+    if (!audioEl) { audioEl = new Audio(); audioEl.loop = true; audioEl.preload = 'none'; audioEl.setAttribute('playsinline', ''); }
+    var ac = audioCtx();
+    if (ac && !audioSrcNode) {
+      try { audioSrcNode = ac.createMediaElementSource(audioEl); musicGain = ac.createGain(); musicGain.gain.value = 0; audioSrcNode.connect(musicGain); musicGain.connect(ac.destination); }
+      catch(e){ audioSrcNode = null; musicGain = null; }
+    }
+  }
+  function setTrack(i){
+    trackIdx = i; ensureAudio();
+    var want = new URL(TRACKS[i].src, location.href).href;
+    if (audioEl.src !== want) audioEl.src = TRACKS[i].src;
+  }
   function startMusic(){
-    var ac = audioCtx(); if (!ac || master) return;
-    master = ac.createGain(); master.gain.setValueAtTime(0, ac.currentTime); master.gain.linearRampToValueAtTime(0.11, ac.currentTime + 3); master.connect(ac.destination);
-    [130.81, 196.0, 261.63, 329.63, 392.0].forEach(function(f, i){
-      var o = ac.createOscillator(), g = ac.createGain(), lfo = ac.createOscillator(), lg = ac.createGain();
-      o.type = i === 0 ? 'triangle' : 'sine'; o.frequency.value = f; o.detune.value = (i % 2 ? 4 : -4);
-      g.gain.value = i === 0 ? 0.32 : 0.18;
-      lfo.frequency.value = 0.05 + i*0.023; lg.gain.value = 0.12;
-      lfo.connect(lg); lg.connect(g.gain); o.connect(g); g.connect(master);
-      o.start(); lfo.start(); voices.push(o, lfo);
-    });
+    setTrack(trackIdx);
+    var pr = audioEl.play(); if (pr && pr.catch) pr.catch(function(){});
+    if (musicGain && actx) {
+      var t = actx.currentTime; musicGain.gain.cancelScheduledValues(t); musicGain.gain.setValueAtTime(musicGain.gain.value, t); musicGain.gain.linearRampToValueAtTime(MUSIC_LEVEL, t + 3);
+    } else { audioEl.volume = MUSIC_LEVEL; }
   }
   function stopMusic(){
-    if (!actx || !master) return;
-    var m = master, vs = voices, t = actx.currentTime;
-    master = null; voices = [];
-    m.gain.cancelScheduledValues(t); m.gain.setValueAtTime(m.gain.value, t); m.gain.linearRampToValueAtTime(0, t + 1.2);
-    setTimeout(function(){ vs.forEach(function(v){ try { v.stop(); } catch(e){} }); try { m.disconnect(); } catch(e){} }, 1400);
+    if (!audioEl) return;
+    var el = audioEl;
+    if (musicGain && actx) {
+      var t = actx.currentTime; musicGain.gain.cancelScheduledValues(t); musicGain.gain.setValueAtTime(musicGain.gain.value, t); musicGain.gain.linearRampToValueAtTime(0, t + 1.5);
+      setTimeout(function(){ if (!(vizState === 'running' && musicOn)) el.pause(); }, 1600);
+    } else { el.pause(); }
   }
+  function musicLabel(){ return 'Music: ' + (musicOn ? TRACKS[trackIdx].name : 'off'); }
   function chime(vol){
     var ac = audioCtx(); if (!ac) return;
     var t = ac.currentTime;
@@ -748,6 +767,8 @@ button.google:hover{background:#eceff6}
     $('vizPrompt').hidden = false;
     $('vizStart').textContent = 'Start 2 minutes'; $('vizStart').disabled = false;
     $('vizSound').hidden = false; $('vizErr').textContent = '';
+    $('vizSound').textContent = musicLabel(); $('vizSound').setAttribute('aria-pressed', musicOn ? 'true' : 'false');
+    if (audioEl) { try { audioEl.pause(); audioEl.currentTime = 0; } catch(e){} }
     lastFocusViz = document.activeElement; vizModal.hidden = false; $('vizStart').focus();
   }
   function closeViz(){
@@ -762,7 +783,7 @@ button.google:hover{background:#eceff6}
     $('vizTime').textContent = fmt(left);
     $('vizArc').style.strokeDashoffset = (ARC * Math.min(1, el / VIZ_SECONDS)).toFixed(2);
     var fi = Math.min(5, Math.floor(el / (VIZ_SECONDS / 6)));
-    if (fi !== vizFruitIdx) { if (vizFruitIdx >= 0) chime(0.035); showFruit(fi); }
+    if (fi !== vizFruitIdx) { if (vizFruitIdx >= 0) chime(0.07); showFruit(fi); }
     if (left <= 0) vizFinish();
   }
   async function saveCheckin(){
@@ -783,7 +804,7 @@ button.google:hover{background:#eceff6}
     return { ok: true };
   }
   async function vizFinish(){
-    clearInterval(vizTimer); vizState = 'saving'; stopMusic(); chime(0.16); releaseWake();
+    clearInterval(vizTimer); vizState = 'saving'; stopMusic(); chime(0.22); releaseWake();
     $('vizTime').textContent = '0:00'; $('vizArc').style.strokeDashoffset = ARC.toFixed(2);
     $('vizHint').textContent = 'Saving your check-in'; $('vizStart').disabled = true; $('vizSound').hidden = true;
     var r = await saveCheckin();
@@ -806,7 +827,7 @@ button.google:hover{background:#eceff6}
     if (vizState === 'idle' || vizState === 'paused') {
       audioCtx();
       if (musicOn) startMusic();
-      if (vizState === 'idle') chime(0.05);
+      if (vizState === 'idle') chime(0.08);
       vizStartAt = performance.now(); vizState = 'running'; this.textContent = 'Pause';
       requestWake(); clearInterval(vizTimer); vizTimer = setInterval(vizTick, 250); vizTick();
     } else if (vizState === 'running') {
@@ -815,9 +836,13 @@ button.google:hover{background:#eceff6}
       clearInterval(vizTimer); stopMusic(); releaseWake();
     } else if (vizState === 'done') { closeViz(); }
   });
+  try { var savedMusic = localStorage.getItem('goal-tree-music'); if (savedMusic === 'off') musicOn = false; else if (savedMusic && TRACKS[+savedMusic]) trackIdx = +savedMusic; } catch(e){}
   $('vizSound').addEventListener('click', function(){
-    musicOn = !musicOn;
-    this.textContent = 'Music: ' + (musicOn ? 'on' : 'off'); this.setAttribute('aria-pressed', musicOn ? 'true' : 'false');
+    if (musicOn && trackIdx < TRACKS.length - 1) trackIdx++;
+    else if (musicOn) musicOn = false;
+    else { musicOn = true; trackIdx = 0; }
+    try { localStorage.setItem('goal-tree-music', musicOn ? String(trackIdx) : 'off'); } catch(e){}
+    this.textContent = musicLabel(); this.setAttribute('aria-pressed', musicOn ? 'true' : 'false');
     if (vizState === 'running') { if (musicOn) startMusic(); else stopMusic(); }
   });
   $('vizClose').addEventListener('click', closeViz);
