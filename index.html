@@ -132,6 +132,45 @@ button.google:hover{background:#eceff6}
 #saveStatus:empty{display:none}
 #saveStatus{margin:10px 0 0}
 .x{position:absolute;top:10px;right:10px;border:0;background:transparent;font-size:22px;line-height:1;padding:6px 10px}
+.grp{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:8px 0 2px}
+#steps ol{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+#steps .note{margin:8px 0 0}
+.name2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.name2[hidden]{display:none}
+.name2 > div{display:grid;gap:4px;min-width:0}
+.name2 input{width:100%;min-width:0;box-sizing:border-box}
+.strip{display:grid;grid-template-columns:repeat(30,1fr);gap:3px}
+.strip[hidden]{display:none}
+.strip i{height:7px;border-radius:2px;background:rgba(255,255,255,.1)}
+.strip i.on{background:var(--mint)}
+.strip i.next{background:rgba(245,185,66,.35);outline:1px solid var(--gold);outline-offset:1px}
+.track[hidden]{display:none}
+#checkBtn{margin-top:0;min-width:210px}
+#checkBtn:disabled{opacity:1;cursor:default;background:rgba(94,230,168,.16);color:#aef4d2;border:1px solid rgba(94,230,168,.5)}
+.welcome{width:min(540px,100%);max-height:calc(100% - 24px);overflow:auto}
+.welcome .eyebrow,.vizbox .eyebrow{margin:0}
+.welcome .lead{margin:0;font-size:14px;line-height:1.55;color:var(--text)}
+.welcome h3{font-family:var(--display);font-size:13px;font-weight:600;margin:6px 0 0;color:var(--gold);letter-spacing:.02em}
+.wsteps,.wdaily{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px;line-height:1.5;color:var(--muted)}
+.wsteps b,.wdaily b{color:var(--text);font-weight:700}
+.welcome .row{margin-top:6px}
+.vizbox{width:min(440px,100%);text-align:center;justify-items:center}
+.vizbox h2{padding:0 24px}
+.ring{position:relative;width:180px;height:180px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.rtrack{fill:none;stroke:rgba(255,255,255,.08);stroke-width:6}
+.rarc{fill:none;stroke:var(--gold);stroke-width:6;stroke-linecap:round;stroke-dasharray:326.73;stroke-dashoffset:0;transition:stroke-dashoffset .3s linear}
+.ringtxt{position:absolute;inset:0;display:grid;place-content:center;gap:2px}
+#vizTime{font-family:var(--display);font-size:38px;font-weight:600;font-variant-numeric:tabular-nums}
+#vizHint{font-size:12px;color:var(--muted)}
+.vizgoal{margin:0;font-size:13px;color:var(--bark);line-height:1.45}
+.vizfruit{margin:0;font-family:var(--display);font-size:22px;font-weight:600;color:#ffe2a0;min-height:2.6em;display:grid;place-items:center;text-wrap:balance;transition:opacity .45s}
+.vizfruit.fade{opacity:0}
+.vizprompt{max-width:340px}
+.vizprompt[hidden]{display:none}
+.vizrow{justify-content:center}
+#vizSound[hidden]{display:none}
+@media (prefers-reduced-motion: reduce){ .rarc,.vizfruit{transition:none} }
 #panelToggle{display:none}
 @media (max-width:860px){
   #panel{display:none;top:116px;left:16px;right:16px;width:auto;max-height:calc(100% - 350px)}
@@ -156,41 +195,46 @@ button.google:hover{background:#eceff6}
 <div id="labels" aria-hidden="true"></div>
 
 <header class="title">
-  <p class="eyebrow">Your 30-day goal tree</p>
-  <h1>Reprogram your mind</h1>
-  <p class="sub">Drag to turn the tree, scroll or pinch to zoom. Press play to watch 30 days of daily visualization change the roots, the goal and the fruits.</p>
+  <p class="eyebrow" id="eyebrow">Your 30-day goal tree</p>
+  <h1 id="heroTitle">Reprogram your mind</h1>
+  <p class="sub" id="heroSub">Drag to turn the tree, scroll or pinch to zoom. Press play to watch 30 days of daily visualization change the roots, the goal and the fruits.</p>
 </header>
 
 <div id="topbar">
   <span id="acctLabel" class="acct-label"></span>
+  <button id="howBtn" type="button">How it works</button>
   <button id="acctBtn" type="button" hidden>Sign in</button>
-  <button id="panelToggle" type="button" aria-expanded="false" aria-controls="panel">Steps and meters</button>
+  <button id="panelToggle" type="button" aria-expanded="false" aria-controls="panel">Steps</button>
 </div>
 
 <aside id="panel">
-  <section class="meters" aria-label="What is happening inside">
-    <h2>Inside your mind today</h2>
-    <div class="meter"><span>Old negative evidence</span><span class="val" id="mRed">94%</span><div class="bar"><i id="bRed" style="background:var(--red)"></i></div></div>
-    <div class="meter"><span>New evidence from visualizing</span><span class="val" id="mMint">6%</span><div class="bar"><i id="bMint" style="background:var(--mint)"></i></div></div>
-    <div class="meter"><span>Fruit ripeness</span><span class="val" id="mRipe">0%</span><div class="bar"><i id="bRipe" style="background:var(--gold)"></i></div></div>
-    <div class="meter"><span>Willpower needed</span><span class="val" id="mWill">100%</span><div class="bar"><i id="bWill" style="background:#8f9ac0"></i></div></div>
-  </section>
   <section>
-    <h2>The daily process</h2>
-    <ol id="steps">
-      <li>Write your 3 to 5 biggest stresses</li>
-      <li>Flip each into a fruit, written as already solved</li>
-      <li>Pick a power goal you can believe</li>
-      <li>Picture only the fruits, 2 to 5 minutes a day</li>
-      <li>Snap the band and reset when doubt hits</li>
-      <li>Act fast on the small prompts</li>
-    </ol>
+    <h2>How it works</h2>
+    <div id="steps">
+      <p class="grp">Set it up once</p>
+      <ol>
+        <li>Write your 3 to 5 biggest stresses</li>
+        <li>Turn each into a fruit, written as if it is already solved</li>
+        <li>Pick a power goal you truly believe</li>
+      </ol>
+      <p class="grp">Then every day</p>
+      <ol>
+        <li>Start the 2-minute visualization, close your eyes and feel each fruit as real</li>
+        <li>Check in: your tree grows a day and a red root turns green</li>
+        <li>When doubt hits, snap the band and picture one fruit again</li>
+      </ol>
+      <p class="note">Miss a day and your tree starts to dim until you check in again.</p>
+    </div>
   </section>
   <section>
     <h2>Your fruits and goal</h2>
     <p class="note" id="noteTxt">You are looking at example fruits. Create a free account to put your own goal on the tree.</p>
     <button id="editBtn" type="button" aria-expanded="false" aria-controls="editForm">Make this tree mine</button>
     <form id="editForm" hidden>
+      <div id="nameEdit" class="name2" hidden>
+        <div><label for="fnEdit">First name</label><input id="fnEdit" maxlength="40" autocomplete="given-name"></div>
+        <div><label for="lnEdit">Last name</label><input id="lnEdit" maxlength="40" autocomplete="family-name"></div>
+      </div>
       <label for="goalIn">Power goal</label>
       <textarea id="goalIn" maxlength="300" rows="4"></textarea>
       <span class="count" id="goalCount" aria-live="polite"></span>
@@ -204,6 +248,13 @@ button.google:hover{background:#eceff6}
     </form>
     <p class="note" id="saveStatus" role="status"></p>
   </section>
+  <section class="meters" aria-label="What is happening inside">
+    <h2>Inside your mind today</h2>
+    <div class="meter"><span>Old negative evidence</span><span class="val" id="mRed">94%</span><div class="bar"><i id="bRed" style="background:var(--red)"></i></div></div>
+    <div class="meter"><span>New evidence from visualizing</span><span class="val" id="mMint">6%</span><div class="bar"><i id="bMint" style="background:var(--mint)"></i></div></div>
+    <div class="meter"><span>Fruit ripeness</span><span class="val" id="mRipe">0%</span><div class="bar"><i id="bRipe" style="background:var(--gold)"></i></div></div>
+    <div class="meter"><span>Willpower needed</span><span class="val" id="mWill">100%</span><div class="bar"><i id="bWill" style="background:#8f9ac0"></i></div></div>
+  </section>
 </aside>
 
 <div id="dock">
@@ -211,12 +262,15 @@ button.google:hover{background:#eceff6}
     <span id="dayBadge">Day 1</span>
     <div><strong id="phaseTitle">Write your stresses, flip them into fruits</strong><span id="phaseText">The roots are full of red: years of negative evidence. A big money goal gets rejected, so pick fruits and a goal you can believe.</span></div>
   </div>
+  <div class="strip" id="strip" hidden></div>
   <div class="controls">
+    <button id="checkBtn" type="button" class="primary" hidden>Start today's visualization</button>
     <button id="playBtn" type="button" aria-pressed="true">Pause</button>
-    <div class="track">
+    <div class="track" id="track">
       <input type="range" id="day" min="0" max="30" step="0.01" value="0" aria-label="Day of the 30-day commitment">
       <div class="ticks"><span>Day 1</span><span>10</span><span>20</span><span>30</span></div>
     </div>
+    <button id="previewBtn" type="button" hidden>Preview 30 days</button>
     <button id="doubtBtn" type="button">Doubt hits</button>
     <button id="snapBtn" type="button">Snap and reset</button>
   </div>
@@ -234,6 +288,10 @@ button.google:hover{background:#eceff6}
     <button type="button" id="googleBtn" class="google" hidden>Continue with Google</button>
     <div class="or" id="orLine" hidden>or</div>
     <form id="authForm" novalidate>
+      <div id="nameFields" class="name2">
+        <div><label for="authFirst">First name</label><input id="authFirst" maxlength="40" autocomplete="given-name"></div>
+        <div><label for="authLast">Last name</label><input id="authLast" maxlength="40" autocomplete="family-name"></div>
+      </div>
       <label for="authEmail">Email</label>
       <input id="authEmail" type="email" autocomplete="email" required>
       <label for="authPass">Password</label>
@@ -247,6 +305,46 @@ button.google:hover{background:#eceff6}
       <button type="submit" class="primary">Save new password</button>
     </form>
     <p class="err" id="authErr" role="alert"></p>
+  </div>
+</div>
+
+<div id="welcome" class="modal" hidden>
+  <div class="dialog welcome" role="dialog" aria-modal="true" aria-labelledby="wTitle">
+    <button type="button" class="x" id="wClose" aria-label="Close">&times;</button>
+    <p class="eyebrow">Welcome</p>
+    <h2 id="wTitle">Grow your 30-day goal tree</h2>
+    <p class="lead">Your mind acts on the evidence you feed it. This tree lets you watch that happen: the roots are your subconscious, the trunk is your goal, and the fruits are your stresses, solved.</p>
+    <h3>Set it up once</h3>
+    <ol class="wsteps">
+      <li><b>Write your 3 to 5 biggest stresses.</b> The things on your mind at night and when you wake up.</li>
+      <li><b>Turn each one into a fruit.</b> Write it as if it is already solved, like "Our debt is paid off."</li>
+      <li><b>Pick a power goal you believe.</b> A stretch, but one your mind will not reject.</li>
+    </ol>
+    <h3>Then every day</h3>
+    <ul class="wdaily">
+      <li>Press <b>Start today's visualization</b>, close your eyes and feel your fruits as real for 2 minutes.</li>
+      <li>Each check-in grows your tree one day and turns a red root green.</li>
+      <li>Miss a day and your tree starts to dim, until you come back.</li>
+    </ul>
+    <div class="row"><button type="button" class="primary" id="wStart">Start free</button><button type="button" id="wLater">Look around first</button></div>
+    <p class="note">Free account. Your goal and fruits stay private to you.</p>
+  </div>
+</div>
+
+<div id="vizModal" class="modal" hidden>
+  <div class="dialog vizbox" role="dialog" aria-modal="true" aria-labelledby="vizTitle">
+    <button type="button" class="x" id="vizClose" aria-label="Close">&times;</button>
+    <p class="eyebrow" id="vizDay">Day 1 of 30</p>
+    <h2 id="vizTitle">Close your eyes and feel it as real</h2>
+    <div class="ring">
+      <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="rtrack"></circle><circle cx="60" cy="60" r="52" class="rarc" id="vizArc"></circle></svg>
+      <div class="ringtxt"><span id="vizTime">2:00</span><small id="vizHint">Ready when you are</small></div>
+    </div>
+    <p class="vizgoal" id="vizGoal"></p>
+    <p class="vizfruit" id="vizFruit" aria-live="polite"></p>
+    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? A soft chime plays when each new fruit comes up and when your 2 minutes are done.</p>
+    <div class="row vizrow"><button type="button" class="primary" id="vizStart">Start 2 minutes</button><button type="button" id="vizSound" aria-pressed="true">Music: on</button></div>
+    <p class="err" id="vizErr" role="alert"></p>
   </div>
 </div>
 
@@ -285,12 +383,12 @@ button.google:hover{background:#eceff6}
   var stage = $('stage');
   var PH = [
     { max: 3,  title: "Write your stresses, flip them into fruits", text: "The roots are full of red: years of negative evidence. A big money goal gets rejected, so pick fruits and a goal you can believe.", steps: [0,1,2] },
-    { max: 10, title: "Picture the fruits every day", text: "2 to 5 minutes, headphones on, eyes closed. Feel the fruits as already real. Each session drops new evidence into the roots.", steps: [3] },
-    { max: 20, title: "Hope, then prompts", text: "The pull back gets weaker. Small ideas start to show up: follow up with that person, film that video. Act on them right away.", steps: [3,5] },
-    { max: 99, title: "Certainty", text: "The fruits start to feel normal. Belief carries the action now, not willpower. Keep visualizing and keep acting.", steps: [3,5] }
+    { max: 10, title: "Picture the fruits every day", text: "2 to 5 minutes, headphones on, eyes closed. Feel the fruits as already real. Each session drops new evidence into the roots.", steps: [3,4] },
+    { max: 20, title: "Hope, then prompts", text: "The pull back gets weaker. Small ideas start to show up: follow up with that person, film that video. Act on them right away.", steps: [3,4] },
+    { max: 99, title: "Certainty", text: "The fruits start to feel normal. Belief carries the action now, not willpower. Keep visualizing and keep acting.", steps: [3,4] }
   ];
-  var DOUBT = { title: "Doubt hits", text: "A no-show, a comparison, an argument. Your subconscious pulls you back toward the old evidence. Snap the band, go somewhere quiet and picture the fruits for 2 minutes.", steps: [4] };
-  var RESET = { title: "Snap and reset", text: "Back to the fruits. Each reset makes the pull weaker and the fruits easier to believe.", steps: [4,3] };
+  var DOUBT = { title: "Doubt hits", text: "A no-show, a comparison, an argument. Your subconscious pulls you back toward the old evidence. Snap the band, go somewhere quiet and picture the fruits for 2 minutes.", steps: [5] };
+  var RESET = { title: "Snap and reset", text: "Back to the fruits. Each reset makes the pull weaker and the fruits easier to believe.", steps: [5,3] };
 
   var steps = Array.prototype.slice.call(document.querySelectorAll('#steps li'));
   var lastKey = '';
@@ -303,6 +401,7 @@ button.google:hover{background:#eceff6}
   }
 
   var day = reduce ? 15 : 0, playing = !reduce, doubt = 0, doubtTarget = 0, resetUntil = 0;
+  var previewing = false, checkins = [], hasSaved = false, checkinsReady = true, treeN = 0;
   var slider = $('day'), playBtn = $('playBtn');
   slider.value = day;
   function setPlayLabel(){
@@ -343,13 +442,16 @@ button.google:hover{background:#eceff6}
 
   var form = $('editForm'), editBtn = $('editBtn'), noteTxt = $('noteTxt'), saveStatus = $('saveStatus');
   function updCount(){ $('goalCount').textContent = $('goalIn').value.length + ' / 300'; }
-  function fillForm(){ $('goalIn').value = data.goal; for (var i=0;i<6;i++) $('f'+i).value = data.fruits[i]; updCount(); }
+  function fillForm(){
+    $('goalIn').value = data.goal; for (var i=0;i<6;i++) $('f'+i).value = data.fruits[i]; updCount();
+    if (currentUser) { var md = currentUser.user_metadata || {}; $('fnEdit').value = md.first_name || md.given_name || ''; $('lnEdit').value = md.last_name || md.family_name || ''; }
+  }
   function openEditor(){
     form.hidden = false; editBtn.setAttribute('aria-expanded', 'true'); fillForm();
     if (window.innerWidth <= 860) { document.body.classList.add('panel-open'); $('panelToggle').setAttribute('aria-expanded', 'true'); }
     $('goalIn').focus();
   }
-  function closeEditor(){ form.hidden = true; editBtn.setAttribute('aria-expanded', 'false'); }
+  function closeEditor(){ form.hidden = true; editBtn.setAttribute('aria-expanded', 'false'); $('panel').scrollTop = 0; }
   function setStatus(msg, ok){ saveStatus.textContent = msg || ''; saveStatus.className = 'note' + (msg ? (ok ? ' ok' : ' errtxt') : ''); }
   $('goalIn').addEventListener('input', updCount);
   editBtn.addEventListener('click', function(){
@@ -362,13 +464,19 @@ button.google:hover{background:#eceff6}
     if (g) data.goal = g;
     for (var i=0;i<6;i++){ var v = $('f'+i).value.replace(/\s+/g, ' ').trim(); if (v) data.fruits[i] = v; }
     applyText();
-    if (!sb) { saveLocal(data); closeEditor(); setStatus('Saved on this device.', true); return; }
+    if (!sb) { saveLocal(data); hasSaved = true; closeEditor(); setStatus('Saved on this device.', true); refreshStatus(); renderDock(); return; }
     if (!currentUser) { openAuth('up'); return; }
     var btn = $('saveBtn'); btn.disabled = true; setStatus('Saving...', true);
     var res = await sb.from('goal_trees').upsert({ user_id: currentUser.id, goal: data.goal, fruits: data.fruits, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
     btn.disabled = false;
     if (res.error) { setStatus('Could not save: ' + res.error.message + ' Please try again.'); return; }
-    closeEditor(); setStatus('Saved to your account.', true);
+    hasSaved = true;
+    var fnv = $('fnEdit').value.trim(), lnv = $('lnEdit').value.trim(), md = currentUser.user_metadata || {};
+    if (fnv && (fnv !== (md.first_name || '') || lnv !== (md.last_name || ''))) {
+      var ur = await sb.auth.updateUser({ data: { first_name: fnv, last_name: lnv } });
+      if (!ur.error && ur.data && ur.data.user) { currentUser = ur.data.user; renderAcct(); }
+    }
+    closeEditor(); setStatus('Saved to your account.', true); refreshStatus(); renderDock();
   });
   $('resetBtn').addEventListener('click', function(){ var ex = copyExamples(); data.goal = ex.goal; data.fruits = ex.fruits; fillForm(); applyText(); setStatus('Examples loaded. Press Save to keep them.', true); });
   var delArmed = false, delTimer = 0;
@@ -379,7 +487,7 @@ button.google:hover{background:#eceff6}
     delArmed = false; clearTimeout(delTimer); b.textContent = 'Delete my saved goal';
     var res = await sb.from('goal_trees').delete().eq('user_id', currentUser.id);
     if (res.error) { setStatus('Could not delete: ' + res.error.message); return; }
-    data = copyExamples(); applyText(); closeEditor(); setStatus('Your saved goal and fruits were deleted.', true);
+    data = copyExamples(); hasSaved = false; checkins = []; applyText(); closeEditor(); setStatus('Your saved goal and fruits were deleted.', true); refreshStatus(); renderDock();
   });
 
   var authModal = $('authModal'), authForm = $('authForm'), newPassForm = $('newPassForm'), authErr = $('authErr');
@@ -403,6 +511,7 @@ button.google:hover{background:#eceff6}
     $('authSubmit').textContent = m === 'up' ? 'Create account' : 'Sign in';
     $('authPass').setAttribute('autocomplete', m === 'up' ? 'new-password' : 'current-password');
     $('forgotBtn').hidden = m !== 'in';
+    $('nameFields').hidden = m !== 'up';
     showAuthMsg('');
   }
   function openAuth(m, sub){
@@ -410,7 +519,7 @@ button.google:hover{background:#eceff6}
     lastFocus = document.activeElement;
     authForm.hidden = false; newPassForm.hidden = true; $('authTabs').hidden = false;
     $('authSub').textContent = sub || 'Save your power goal and fruits. They are private to your account.';
-    setMode(m || 'up'); authModal.hidden = false; $('authEmail').focus();
+    setMode(m || 'up'); authModal.hidden = false; $(authMode === 'up' ? 'authFirst' : 'authEmail').focus();
   }
   function closeAuth(){ authModal.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
   $('tabUp').addEventListener('click', function(){ setMode('up'); });
@@ -423,6 +532,8 @@ button.google:hover{background:#eceff6}
   authForm.addEventListener('submit', async function(e){
     e.preventDefault();
     var email = $('authEmail').value.trim(), pass = $('authPass').value;
+    var first = $('authFirst').value.trim(), last = $('authLast').value.trim();
+    if (authMode === 'up' && !first) { showAuthMsg('Enter your first name.'); $('authFirst').focus(); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAuthMsg('Enter a valid email address.'); $('authEmail').focus(); return; }
     if (pass.length < 8) { showAuthMsg('Use a password with at least 8 characters.'); $('authPass').focus(); return; }
     var btn = $('authSubmit'); btn.disabled = true;
@@ -430,7 +541,7 @@ button.google:hover{background:#eceff6}
     var res;
     try {
       res = authMode === 'up'
-        ? await sb.auth.signUp({ email: email, password: pass, options: { emailRedirectTo: siteUrl() } })
+        ? await sb.auth.signUp({ email: email, password: pass, options: { emailRedirectTo: siteUrl(), data: { first_name: first, last_name: last } } })
         : await sb.auth.signInWithPassword({ email: email, password: pass });
     } catch(err){ res = { error: err }; }
     btn.disabled = false;
@@ -463,23 +574,38 @@ button.google:hover{background:#eceff6}
   });
 
   var acctBtn = $('acctBtn'), acctLabel = $('acctLabel');
+  function userName(){
+    if (!currentUser) return '';
+    var md = currentUser.user_metadata || {};
+    var fn = md.first_name || md.given_name || (md.full_name ? String(md.full_name).split(' ')[0] : '') || (md.name ? String(md.name).split(' ')[0] : '');
+    return String(fn || '').trim();
+  }
   function renderAcct(){
+    var hero = $('heroTitle'), heroSub = $('heroSub');
     if (!sb) {
       acctBtn.hidden = true; acctLabel.textContent = ''; editBtn.textContent = 'Edit my fruits and goal';
       noteTxt.textContent = 'Demo mode: sign-in turns on once config.js has your Supabase keys. Changes save on this device only.';
-      return;
+      $('nameEdit').hidden = true;
+      renderDock(); return;
     }
     acctBtn.hidden = false;
     $('deleteBtn').hidden = !currentUser;
+    $('nameEdit').hidden = !currentUser;
     if (currentUser) {
-      acctBtn.textContent = 'Sign out'; acctLabel.textContent = currentUser.email || 'Signed in';
+      var nm = userName();
+      acctBtn.textContent = 'Sign out'; acctLabel.textContent = currentUser.email || '';
+      hero.textContent = nm ? 'Welcome, ' + nm : 'Welcome back';
+      heroSub.textContent = 'This is your tree. Drag to turn it. Every day you check in, it grows.';
       editBtn.textContent = 'Edit my fruits and goal';
       noteTxt.textContent = 'This is your tree. Your goal and fruits are saved privately to your account.';
     } else {
       acctBtn.textContent = 'Sign in'; acctLabel.textContent = '';
+      hero.textContent = 'Reprogram your mind';
+      heroSub.textContent = 'Drag to turn the tree, scroll or pinch to zoom. Press play to watch 30 days of daily visualization change the roots, the goal and the fruits.';
       editBtn.textContent = 'Make this tree mine';
       noteTxt.textContent = 'You are looking at example fruits. Create a free account to put your own goal on the tree.';
     }
+    renderDock();
   }
   acctBtn.addEventListener('click', async function(){
     if (currentUser) { acctBtn.disabled = true; await sb.auth.signOut(); acctBtn.disabled = false; }
@@ -488,11 +614,248 @@ button.google:hover{background:#eceff6}
   async function loadMine(){
     if (!currentUser) return;
     setStatus('Loading your tree...', true);
-    var res = await sb.from('goal_trees').select('goal,fruits').eq('user_id', currentUser.id).maybeSingle();
+    var res = await sb.from('goal_trees').select('goal,fruits,checkins').eq('user_id', currentUser.id).maybeSingle();
+    if (res.error && /checkins/i.test(res.error.message || '')) {
+      checkinsReady = false;
+      res = await sb.from('goal_trees').select('goal,fruits').eq('user_id', currentUser.id).maybeSingle();
+    }
     if (res.error) { setStatus('Could not load your tree: ' + res.error.message); return; }
-    if (res.data) { data = normalize(res.data); applyText(); setStatus(''); }
-    else { data = copyExamples(); applyText(); setStatus('Welcome. Replace the examples with your own goal and fruits, then press Save.', true); openEditor(); }
+    if (res.data) { data = normalize(res.data); hasSaved = true; checkins = cleanDates(res.data.checkins); applyText(); setStatus(''); }
+    else { data = copyExamples(); hasSaved = false; checkins = []; applyText(); setStatus('Welcome. Replace the examples with your own goal and fruits, then press Save.', true); openEditor(); }
+    refreshStatus(); renderDock();
   }
+  function ymd(d){ return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function daysFrom(a, b){
+    var pa = a.split('-'), pb = b.split('-');
+    return Math.round((Date.UTC(+pb[0], pb[1] - 1, +pb[2]) - Date.UTC(+pa[0], pa[1] - 1, +pa[2])) / 86400000);
+  }
+  function cleanDates(arr){
+    var seen = {}, out = [];
+    (Array.isArray(arr) ? arr : []).forEach(function(d){ d = String(d).slice(0, 10); if (/^\d{4}-\d{2}-\d{2}$/.test(d) && !seen[d]) { seen[d] = 1; out.push(d); } });
+    return out.sort();
+  }
+  var myStat = { n: 0, done: false, missed: 0, streak: 0 }, statusAt = 0;
+  function refreshStatus(){
+    var today = ymd(new Date()), n = checkins.length, done = checkins.indexOf(today) !== -1;
+    var last = n ? checkins[n - 1] : null, gap = last ? daysFrom(last, today) : 0;
+    var missed = (!done && gap >= 2) ? gap - 1 : 0, streak = 0;
+    if (done || gap === 1) {
+      var set = {}; checkins.forEach(function(c){ set[c] = 1; });
+      var d = new Date(); if (!done) d.setDate(d.getDate() - 1);
+      while (set[ymd(d)]) { streak++; d.setDate(d.getDate() - 1); }
+    }
+    myStat = { n: n, done: done, missed: missed, streak: streak };
+    statusAt = performance.now();
+    if ($('vizModal').hidden) treeN = n;
+  }
+  function isMine(){ return (sb ? !!currentUser : true) && !previewing; }
+
+  var strip = $('strip'), checkBtn = $('checkBtn'), previewBtn = $('previewBtn');
+  for (var si = 0; si < 30; si++) strip.appendChild(document.createElement('i'));
+  function renderDock(){
+    var signedIn = sb ? !!currentUser : true, mine = isMine();
+    if (mine) playing = false;
+    checkBtn.hidden = !mine; strip.hidden = !mine || !hasSaved;
+    playBtn.hidden = mine; $('track').hidden = mine;
+    previewBtn.hidden = !signedIn;
+    previewBtn.textContent = previewing ? 'Back to my tree' : 'Preview 30 days';
+    var cells = strip.children, n = Math.min(myStat.n, 30);
+    for (var i = 0; i < cells.length; i++) cells[i].className = (i < n ? 'on' : '') + ((!myStat.done && i === n) ? ' next' : '');
+    strip.setAttribute('aria-label', 'Your 30-day progress: ' + myStat.n + ' of 30 days done');
+    if (!hasSaved) { checkBtn.textContent = 'Set up my tree'; checkBtn.disabled = false; }
+    else if (myStat.done) { checkBtn.textContent = 'Done for today'; checkBtn.disabled = true; }
+    else { checkBtn.textContent = "Start today's visualization"; checkBtn.disabled = false; }
+    setPlayLabel();
+  }
+  function minePhase(){
+    var st = myStat, n = st.n;
+    if (sb && !checkinsReady) return { key: 'm-db', title: 'Daily check-ins are almost ready', text: 'The site needs a one-time database update before check-ins can be saved. Your goal and fruits still save as usual.', steps: [0,1,2] };
+    if (!hasSaved) return { key: 'm-setup', title: 'Make this tree yours', text: 'Replace the example goal and fruits with your own and press Save. Then your daily 2-minute visualization unlocks.', steps: [0,1,2] };
+    if (st.done) return { key: 'm-done-' + n + '-' + st.streak, title: 'Day ' + n + ' done. Your tree grew.', text: (n >= 30 ? 'You finished all 30 days. Keep checking in to keep your tree full and green. ' : '') + (st.streak > 1 ? st.streak + '-day streak. ' : '') + 'Come back tomorrow for day ' + (n + 1) + '.', steps: [] };
+    if (st.missed > 0) return { key: 'm-miss-' + st.missed, title: 'You missed ' + st.missed + (st.missed === 1 ? ' day' : ' days') + '. Your tree is dimming.', text: "Do today's 2 minutes to bring it back. Your progress is safe, and every check-in counts.", steps: [3,4] };
+    return { key: 'm-ready-' + n + '-' + st.streak, title: n === 0 ? 'Ready for day 1' : 'Ready for day ' + (n + 1), text: 'Close your eyes for 2 minutes and feel your fruits as real. When you finish, your tree grows a day and a red root turns green.' + (st.streak > 0 ? ' ' + st.streak + '-day streak so far.' : ''), steps: [3,4] };
+  }
+  function startToday(){
+    if (sb && !currentUser) { openAuth('up', 'Create a free account to build your own goal tree.'); return; }
+    if (!hasSaved) { openEditor(); return; }
+    if (myStat.done) return;
+    if (sb && !checkinsReady) { setStatus('Daily check-ins need a one-time database update before they can be saved.'); return; }
+    openViz();
+  }
+  checkBtn.addEventListener('click', startToday);
+  previewBtn.addEventListener('click', function(){
+    if (previewing) { previewing = false; }
+    else { previewing = true; day = 0; slider.value = 0; playing = true; }
+    renderDock();
+  });
+
+  var actx = null, master = null, voices = [];
+  function audioCtx(){
+    try { if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); }
+    catch(e){ actx = null; }
+    return actx;
+  }
+  function startMusic(){
+    var ac = audioCtx(); if (!ac || master) return;
+    master = ac.createGain(); master.gain.setValueAtTime(0, ac.currentTime); master.gain.linearRampToValueAtTime(0.11, ac.currentTime + 3); master.connect(ac.destination);
+    [130.81, 196.0, 261.63, 329.63, 392.0].forEach(function(f, i){
+      var o = ac.createOscillator(), g = ac.createGain(), lfo = ac.createOscillator(), lg = ac.createGain();
+      o.type = i === 0 ? 'triangle' : 'sine'; o.frequency.value = f; o.detune.value = (i % 2 ? 4 : -4);
+      g.gain.value = i === 0 ? 0.32 : 0.18;
+      lfo.frequency.value = 0.05 + i*0.023; lg.gain.value = 0.12;
+      lfo.connect(lg); lg.connect(g.gain); o.connect(g); g.connect(master);
+      o.start(); lfo.start(); voices.push(o, lfo);
+    });
+  }
+  function stopMusic(){
+    if (!actx || !master) return;
+    var m = master, vs = voices, t = actx.currentTime;
+    master = null; voices = [];
+    m.gain.cancelScheduledValues(t); m.gain.setValueAtTime(m.gain.value, t); m.gain.linearRampToValueAtTime(0, t + 1.2);
+    setTimeout(function(){ vs.forEach(function(v){ try { v.stop(); } catch(e){} }); try { m.disconnect(); } catch(e){} }, 1400);
+  }
+  function chime(vol){
+    var ac = audioCtx(); if (!ac) return;
+    var t = ac.currentTime;
+    [523.25, 783.99, 1046.5].forEach(function(f, i){
+      var o = ac.createOscillator(), g = ac.createGain(), at = t + i*0.14;
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(vol, at + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, at + 2.4);
+      o.connect(g); g.connect(ac.destination); o.start(at); o.stop(at + 2.5);
+    });
+  }
+
+  var vizModal = $('vizModal'), vizState = 'idle', vizElapsed = 0, vizStartAt = 0, vizTimer = 0, vizFruitIdx = -1, wakeLock = null, musicOn = true, lastFocusViz = null, vizDone = false;
+  var VIZ_SECONDS = 120, ARC = 326.73;
+  function fmt(sec){ sec = Math.max(0, Math.ceil(sec)); return Math.floor(sec/60) + ':' + String(sec % 60).padStart(2, '0'); }
+  function showFruit(i){
+    var el = $('vizFruit'); vizFruitIdx = i;
+    $('vizHint').textContent = 'Fruit ' + (i + 1) + ' of 6';
+    if (reduce) { el.textContent = data.fruits[i]; return; }
+    el.classList.add('fade');
+    setTimeout(function(){ if (vizState !== 'running' || vizFruitIdx !== i) return; el.textContent = data.fruits[i]; el.classList.remove('fade'); }, 450);
+  }
+  async function requestWake(){ try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e){ wakeLock = null; } }
+  function releaseWake(){ try { if (wakeLock) wakeLock.release(); } catch(e){} wakeLock = null; }
+  function openViz(){
+    vizState = 'idle'; vizElapsed = 0; vizFruitIdx = -1; vizDone = false;
+    $('vizDay').textContent = myStat.n < 30 ? 'Day ' + (myStat.n + 1) + ' of 30' : 'Day ' + (myStat.n + 1);
+    $('vizTitle').textContent = 'Close your eyes and feel it as real';
+    $('vizTime').textContent = fmt(VIZ_SECONDS); $('vizArc').style.strokeDashoffset = '0';
+    $('vizHint').textContent = 'Ready when you are';
+    $('vizGoal').textContent = 'Your power goal: ' + data.goal;
+    $('vizFruit').textContent = data.fruits[0];
+    $('vizPrompt').hidden = false;
+    $('vizStart').textContent = 'Start 2 minutes'; $('vizStart').disabled = false;
+    $('vizSound').hidden = false; $('vizErr').textContent = '';
+    lastFocusViz = document.activeElement; vizModal.hidden = false; $('vizStart').focus();
+  }
+  function closeViz(){
+    clearInterval(vizTimer); vizState = 'idle'; stopMusic(); releaseWake();
+    vizModal.hidden = true;
+    if (vizDone) { vizDone = false; refreshStatus(); renderDock(); snapT = 0; }
+    if (lastFocusViz && lastFocusViz.focus) lastFocusViz.focus();
+  }
+  function vizTick(){
+    if (vizState !== 'running') return;
+    var el = vizElapsed + (performance.now() - vizStartAt) / 1000, left = VIZ_SECONDS - el;
+    $('vizTime').textContent = fmt(left);
+    $('vizArc').style.strokeDashoffset = (ARC * Math.min(1, el / VIZ_SECONDS)).toFixed(2);
+    var fi = Math.min(5, Math.floor(el / (VIZ_SECONDS / 6)));
+    if (fi !== vizFruitIdx) { if (vizFruitIdx >= 0) chime(0.035); showFruit(fi); }
+    if (left <= 0) vizFinish();
+  }
+  async function saveCheckin(){
+    var today = ymd(new Date());
+    if (checkins.indexOf(today) !== -1) { refreshStatus(); return { ok: true }; }
+    var next = cleanDates(checkins.concat([today]));
+    if (!sb) {
+      checkins = next;
+      try { localStorage.setItem('goal-tree-demo-checkins', JSON.stringify(next)); } catch(e){}
+    } else {
+      if (!currentUser) return { ok: false, msg: 'Please sign in again.' };
+      var res = await sb.from('goal_trees').upsert({ user_id: currentUser.id, goal: data.goal, fruits: data.fruits, checkins: next, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+      if (res.error) { if (/checkins/i.test(res.error.message || '')) checkinsReady = false; return { ok: false, msg: res.error.message }; }
+      checkins = next;
+    }
+    doubtTarget = 0; resetUntil = 0;
+    refreshStatus(); renderDock();
+    return { ok: true };
+  }
+  async function vizFinish(){
+    clearInterval(vizTimer); vizState = 'saving'; stopMusic(); chime(0.16); releaseWake();
+    $('vizTime').textContent = '0:00'; $('vizArc').style.strokeDashoffset = ARC.toFixed(2);
+    $('vizHint').textContent = 'Saving your check-in'; $('vizStart').disabled = true; $('vizSound').hidden = true;
+    var r = await saveCheckin();
+    $('vizStart').disabled = false; vizState = 'done';
+    if (!r.ok) {
+      $('vizTitle').textContent = 'Your 2 minutes are done';
+      $('vizHint').textContent = 'Not saved';
+      $('vizErr').textContent = 'Your check-in could not be saved: ' + r.msg;
+      $('vizStart').textContent = 'Close'; $('vizStart').focus();
+      return;
+    }
+    vizDone = true;
+    $('vizTitle').textContent = 'Day ' + myStat.n + ' complete';
+    $('vizHint').textContent = 'Checked in';
+    $('vizFruit').classList.remove('fade'); $('vizFruit').textContent = 'Your tree is about to grow a day.';
+    $('vizPrompt').hidden = true;
+    $('vizStart').textContent = 'See my tree grow'; $('vizStart').focus();
+  }
+  $('vizStart').addEventListener('click', function(){
+    if (vizState === 'idle' || vizState === 'paused') {
+      audioCtx();
+      if (musicOn) startMusic();
+      if (vizState === 'idle') chime(0.05);
+      vizStartAt = performance.now(); vizState = 'running'; this.textContent = 'Pause';
+      requestWake(); clearInterval(vizTimer); vizTimer = setInterval(vizTick, 250); vizTick();
+    } else if (vizState === 'running') {
+      vizElapsed += (performance.now() - vizStartAt) / 1000; vizState = 'paused';
+      this.textContent = 'Resume'; $('vizHint').textContent = 'Paused';
+      clearInterval(vizTimer); stopMusic(); releaseWake();
+    } else if (vizState === 'done') { closeViz(); }
+  });
+  $('vizSound').addEventListener('click', function(){
+    musicOn = !musicOn;
+    this.textContent = 'Music: ' + (musicOn ? 'on' : 'off'); this.setAttribute('aria-pressed', musicOn ? 'true' : 'false');
+    if (vizState === 'running') { if (musicOn) startMusic(); else stopMusic(); }
+  });
+  $('vizClose').addEventListener('click', closeViz);
+  vizModal.addEventListener('click', function(e){ if (e.target === vizModal && vizState !== 'running' && vizState !== 'saving') closeViz(); });
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden && vizState === 'running') requestWake(); });
+
+  var welcome = $('welcome'), lastFocusW = null;
+  function openWelcome(){
+    lastFocusW = document.activeElement;
+    var signedIn = sb ? !!currentUser : true;
+    $('wStart').textContent = !signedIn ? 'Start free' : (!hasSaved ? 'Set up my tree' : (myStat.done ? 'Back to my tree' : "Start today's visualization"));
+    welcome.hidden = false; $('wStart').focus();
+  }
+  function closeWelcome(){
+    welcome.hidden = true;
+    try { localStorage.setItem('goal-tree-welcome-seen', '1'); } catch(e){}
+    if (lastFocusW && lastFocusW.focus) lastFocusW.focus();
+  }
+  function maybeWelcome(){
+    var seen = false; try { seen = !!localStorage.getItem('goal-tree-welcome-seen'); } catch(e){}
+    if (!seen && authModal.hidden && vizModal.hidden && (sb ? !currentUser : true)) openWelcome();
+  }
+  $('howBtn').addEventListener('click', openWelcome);
+  $('wClose').addEventListener('click', closeWelcome);
+  $('wLater').addEventListener('click', closeWelcome);
+  welcome.addEventListener('click', function(e){ if (e.target === welcome) closeWelcome(); });
+  $('wStart').addEventListener('click', function(){ closeWelcome(); startToday(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Escape') return;
+    if (!welcome.hidden) closeWelcome();
+    else if (!vizModal.hidden && vizState !== 'running' && vizState !== 'saving') closeViz();
+  });
+
+  if (!sb) {
+    try { hasSaved = !!localStorage.getItem('goal-tree-demo'); checkins = cleanDates(JSON.parse(localStorage.getItem('goal-tree-demo-checkins') || '[]')); } catch(e){}
+    setTimeout(maybeWelcome, 400);
+  }
+  refreshStatus();
   if (sb) {
     sb.auth.onAuthStateChange(function(event, session){
       var u = session ? session.user : null;
@@ -506,9 +869,10 @@ button.google:hover{background:#eceff6}
         showAuthMsg(''); setTimeout(function(){ $('newPass').focus(); }, 0);
       }
       if (changed) {
-        if (u) setTimeout(loadMine, 0);
-        else { data = copyExamples(); applyText(); closeEditor(); setStatus(''); }
+        if (u) { previewing = false; setTimeout(loadMine, 0); }
+        else { data = copyExamples(); hasSaved = false; checkins = []; previewing = false; applyText(); closeEditor(); setStatus(''); refreshStatus(); renderDock(); }
       }
+      if (event === 'INITIAL_SESSION' && !u) setTimeout(maybeWelcome, 300);
     });
   }
   renderAcct();
@@ -692,8 +1056,8 @@ button.google:hover{background:#eceff6}
     var len = 2.2 + rand()*1.5, dep = 1.6 + rand()*1.1;
     var ca = Math.cos(a), sa = Math.sin(a), wob = (rand()-0.5)*0.6;
     var mc = addRoot([new V3(ca*0.15,0.08,sa*0.15), new V3(ca*0.55,-0.32,sa*0.55), new V3(ca*len*0.5 + wob*sa, -dep*0.55, sa*len*0.5 - wob*ca), new V3(ca*len, -dep, sa*len)], 0.16, 0.02, true);
-    for (var sb=0; sb<2; sb++){
-      var s0 = mc.getPointAt(0.35 + sb*0.3), b = a + (sb ? 0.75 : -0.75)*(0.7 + rand()*0.5), cb = Math.cos(b), sn = Math.sin(b);
+    for (var sbi=0; sbi<2; sbi++){
+      var s0 = mc.getPointAt(0.35 + sbi*0.3), b = a + (sbi ? 0.75 : -0.75)*(0.7 + rand()*0.5), cb = Math.cos(b), sn = Math.sin(b);
       addRoot([s0, new V3(s0.x+cb*0.45, s0.y-0.25, s0.z+sn*0.45), new V3(s0.x+cb*0.95, s0.y-0.6-rand()*0.3, s0.z+sn*0.95)], 0.055, 0.012, false);
     }
   }
@@ -864,9 +1228,13 @@ button.google:hover{background:#eceff6}
   var clock = new THREE.Clock();
   function frame(){
     var dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
-    if (playing) { day += dt*SPEED; if (day >= 30) { day = 30; playing = false; setPlayLabel(); } slider.value = day; }
-    doubt = lerp(doubt, doubtTarget, 1 - Math.pow(0.03, dt));
-    var prog = smooth(day/30);
+    var mine = isMine();
+    if (performance.now() - statusAt > 5000) { refreshStatus(); renderDock(); }
+    if (mine) { var dTgt = Math.min(30, treeN); day = lerp(day, dTgt, 1 - Math.pow(0.12, dt)); if (Math.abs(day - dTgt) < 0.003) day = dTgt; }
+    else if (playing) { day += dt*SPEED; if (day >= 30) { day = 30; playing = false; setPlayLabel(); } slider.value = day; }
+    var missDim = (mine && hasSaved) ? clamp(myStat.missed*0.3, 0, 0.85) : 0;
+    doubt = lerp(doubt, Math.max(doubtTarget, missDim), 1 - Math.pow(0.03, dt));
+    var prog = mine ? clamp(day/30, 0, 1) : smooth(day/30);
     var g = (0.06 + 0.86*prog) * (1 - 0.45*doubt);
     var grow = 0.58 + 0.42*prog;
     var gx = 0.78 + 0.22*grow;
@@ -919,11 +1287,12 @@ button.google:hover{background:#eceff6}
     renderer.render(scene, camera);
 
     var badge = $('dayBadge');
-    badge.textContent = 'Day ' + Math.max(1, Math.ceil(day - 0.001));
+    badge.textContent = mine ? 'Day ' + Math.max(1, myStat.done ? myStat.n : myStat.n + 1) : 'Day ' + Math.max(1, Math.ceil(day - 0.001));
     if (doubtTarget === 1) { badge.classList.add('doubt'); setPhase(DOUBT, 'doubt'); }
     else {
-      badge.classList.remove('doubt');
+      badge.classList.toggle('doubt', mine && hasSaved && myStat.missed > 0);
       if (performance.now() < resetUntil) setPhase(RESET, 'reset');
+      else if (mine) { var mp = minePhase(); setPhase(mp, mp.key); }
       else { var idx = 0; while (day >= PH[idx].max) idx++; setPhase(PH[idx], 'p' + idx); }
     }
     updateMeters(red/NO, ripe, clamp(1 - (g-0.06)/0.86, 0, 1));

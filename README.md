@@ -1,6 +1,8 @@
 # Reprogram Your Mind: 30-day goal tree website
 
-A public website with the 3D goal tree. Anyone can create a free account, and each person's power goal and six fruits are saved privately to their own account.
+A public website with the 3D goal tree. Anyone can create a free account with their name and email. Each person's power goal, six fruits and daily check-ins are saved privately to their own account.
+
+**How it works for visitors:** a welcome pop-up explains the 3 setup steps. After signing up, people write their goal and fruits, then each day press "Start today's visualization" for a 2-minute guided session (timer, soft music, one fruit at a time). Finishing checks them in: their tree grows a day and a red root turns green. Missed days dim the tree until they check in again.
 
 ## What's in this folder
 
@@ -8,7 +10,8 @@ A public website with the 3D goal tree. Anyone can create a free account, and ea
 |---|---|
 | `index.html` | The whole website: 3D tree, 30-day timeline, sign-in, saving |
 | `config.js` | Where you paste your Supabase keys (the only file you need to edit) |
-| `supabase/setup.sql` | Creates the database table and privacy rules (run once) |
+| `supabase/setup.sql` | Creates the database table and privacy rules (run once on a new project) |
+| `supabase/update-checkins.sql` | Adds daily check-ins to a project set up before check-ins existed (run once) |
 | `netlify.toml` | Hosting settings for Netlify |
 | `vendor/` | The 3D and sign-in libraries, bundled so the site doesn't depend on outside servers |
 
@@ -65,6 +68,10 @@ People who use Google don't need a confirmation email, so this also gets around 
 In Netlify: **Domain management > Add a domain**. For a subdomain like `goals.yourdomain.com`, add the CNAME record Netlify shows you at your DNS provider. This doesn't affect your email. Netlify adds HTTPS automatically. Then update the Site URL in Step 3 to the new address.
 
 ---
+
+## Step 7. Daily check-ins update (projects set up before November 20, 2026)
+
+If you ran `setup.sql` before check-ins were added, run `supabase/update-checkins.sql` once in the SQL Editor. Until you do, the site works, but check-ins cannot be saved and the dock shows "Daily check-ins are almost ready".
 
 ## Making changes later
 

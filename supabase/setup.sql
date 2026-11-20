@@ -34,3 +34,11 @@ create policy "Delete own tree" on public.goal_trees
 
 grant select, insert, update, delete on public.goal_trees to authenticated;
 revoke all on public.goal_trees from anon;
+
+-- Daily check-ins (also in update-checkins.sql for projects set up earlier).
+alter table public.goal_trees
+  add column if not exists checkins date[] not null default '{}';
+alter table public.goal_trees drop constraint if exists goal_trees_checkins_len;
+alter table public.goal_trees
+  add constraint goal_trees_checkins_len check (coalesce(array_length(checkins, 1), 0) <= 400);
+notify pgrst, 'reload schema';
