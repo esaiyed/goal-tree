@@ -154,9 +154,14 @@ button.google:hover{background:#eceff6}
 .wsteps,.wdaily{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px;line-height:1.5;color:var(--muted)}
 .wsteps b,.wdaily b{color:var(--text);font-weight:700}
 .welcome .row{margin-top:6px}
-.vizbox{width:min(440px,100%);text-align:center;justify-items:center}
+.vizbox{width:min(440px,100%);text-align:center;justify-items:center;max-height:calc(100% - 24px);overflow:auto}
+.ytwrap{width:100%;max-width:360px;height:200px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#000}
+.ytwrap[hidden]{display:none}
+.ytwrap iframe{width:100%;height:100%;display:block;border:0}
+.today-count{font-size:12px;font-weight:700;color:#aef4d2;background:rgba(94,230,168,.12);border:1px solid rgba(94,230,168,.45);border-radius:999px;padding:4px 10px;font-variant-numeric:tabular-nums}
+.today-count[hidden]{display:none}
 .vizbox h2{padding:0 24px}
-.ring{position:relative;width:180px;height:180px}
+.ring{position:relative;width:160px;height:160px}
 .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
 .rtrack{fill:none;stroke:rgba(255,255,255,.08);stroke-width:6}
 .rarc{fill:none;stroke:var(--gold);stroke-width:6;stroke-linecap:round;stroke-dasharray:326.73;stroke-dashoffset:0;transition:stroke-dashoffset .3s linear}
@@ -224,7 +229,7 @@ button.google:hover{background:#eceff6}
       <p class="grp">Then every day</p>
       <ol>
         <li>Start the 2-minute visualization, close your eyes and feel each fruit as real</li>
-        <li>Check in: your tree grows a day and a red root turns green</li>
+        <li>Check in: your tree grows a day and a red root turns green. Repeat it as often as you like.</li>
         <li>When doubt hits, snap the band and picture one fruit again</li>
       </ol>
       <p class="note">Miss a day and your tree starts to dim until you check in again.</p>
@@ -269,6 +274,7 @@ button.google:hover{background:#eceff6}
   <div class="strip" id="strip" hidden></div>
   <div class="controls">
     <button id="checkBtn" type="button" class="primary" hidden>Start today's visualization</button>
+    <span id="todayCount" class="today-count" hidden></span>
     <button id="playBtn" type="button" aria-pressed="true">Pause</button>
     <div class="track" id="track">
       <input type="range" id="day" min="0" max="30" step="0.01" value="0" aria-label="Day of the 30-day commitment">
@@ -327,7 +333,7 @@ button.google:hover{background:#eceff6}
     <h3>Then every day</h3>
     <ul class="wdaily">
       <li>Press <b>Start today's visualization</b>, close your eyes and feel your fruits as real for 2 minutes.</li>
-      <li>Each check-in grows your tree one day and turns a red root green.</li>
+      <li>Your first session each day grows your tree one day and turns a red root green. Do it again as many times as you like, and the site counts every session.</li>
       <li>Miss a day and your tree starts to dim, until you come back.</li>
     </ul>
     <div class="row"><button type="button" class="primary" id="wStart">Start free</button><button type="button" id="wLater">Look around first</button></div>
@@ -346,7 +352,8 @@ button.google:hover{background:#eceff6}
     </div>
     <p class="vizgoal" id="vizGoal"></p>
     <p class="vizfruit" id="vizFruit" aria-live="polite"></p>
-    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? A soft chime plays when each new fruit comes up and when your 2 minutes are done. Headphones help.</p>
+    <div class="ytwrap" id="ytWrap" hidden><div id="ytPlayer"></div></div>
+    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? A soft chime plays when each new fruit comes up and when your 2 minutes are done. Headphones help. If the music does not start, tap play on the video.</p>
     <div class="row vizrow"><button type="button" class="primary" id="vizStart">Start 2 minutes</button><button type="button" id="vizSound" aria-pressed="true">Music: on</button></div>
     <p class="err" id="vizErr" role="alert"></p>
   </div>
@@ -405,7 +412,7 @@ button.google:hover{background:#eceff6}
   }
 
   var day = reduce ? 15 : 0, playing = !reduce, doubt = 0, doubtTarget = 0, resetUntil = 0;
-  var previewing = false, checkins = [], hasSaved = false, checkinsReady = true, treeN = 0;
+  var previewing = false, checkins = [], sessions = [], hasSaved = false, checkinsReady = true, treeN = 0;
   var slider = $('day'), playBtn = $('playBtn');
   slider.value = day;
   function setPlayLabel(){
@@ -491,7 +498,7 @@ button.google:hover{background:#eceff6}
     delArmed = false; clearTimeout(delTimer); b.textContent = 'Delete my saved goal';
     var res = await sb.from('goal_trees').delete().eq('user_id', currentUser.id);
     if (res.error) { setStatus('Could not delete: ' + res.error.message); return; }
-    data = copyExamples(); hasSaved = false; checkins = []; applyText(); closeEditor(); setStatus('Your saved goal and fruits were deleted.', true); refreshStatus(); renderDock();
+    data = copyExamples(); hasSaved = false; checkins = []; sessions = []; applyText(); closeEditor(); setStatus('Your saved goal and fruits were deleted.', true); refreshStatus(); renderDock();
   });
 
   var authModal = $('authModal'), authForm = $('authForm'), newPassForm = $('newPassForm'), authErr = $('authErr');
@@ -624,8 +631,8 @@ button.google:hover{background:#eceff6}
       res = await sb.from('goal_trees').select('goal,fruits').eq('user_id', currentUser.id).maybeSingle();
     }
     if (res.error) { setStatus('Could not load your tree: ' + res.error.message); return; }
-    if (res.data) { data = normalize(res.data); hasSaved = true; checkins = cleanDates(res.data.checkins); applyText(); setStatus(''); }
-    else { data = copyExamples(); hasSaved = false; checkins = []; applyText(); setStatus('Welcome. Replace the examples with your own goal and fruits, then press Save.', true); openEditor(); }
+    if (res.data) { data = normalize(res.data); hasSaved = true; sessions = cleanSessions(res.data.checkins); checkins = cleanDates(sessions); applyText(); setStatus(''); }
+    else { data = copyExamples(); hasSaved = false; checkins = []; sessions = []; applyText(); setStatus('Welcome. Replace the examples with your own goal and fruits, then press Save.', true); openEditor(); }
     refreshStatus(); renderDock();
   }
   function ymd(d){ return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
@@ -633,12 +640,22 @@ button.google:hover{background:#eceff6}
     var pa = a.split('-'), pb = b.split('-');
     return Math.round((Date.UTC(+pb[0], pb[1] - 1, +pb[2]) - Date.UTC(+pa[0], pa[1] - 1, +pa[2])) / 86400000);
   }
+  function cleanSessions(arr){
+    return (Array.isArray(arr) ? arr : []).map(function(d){ return String(d).slice(0, 10); }).filter(function(d){ return /^\d{4}-\d{2}-\d{2}$/.test(d); }).sort();
+  }
+  function compactSessions(arr){
+    if (arr.length <= 380) return arr;
+    var cut = new Date(); cut.setDate(cut.getDate() - 30);
+    var c = ymd(cut), seen = {}, out = [];
+    arr.forEach(function(d){ if (d >= c) out.push(d); else if (!seen[d]) { seen[d] = 1; out.push(d); } });
+    return out.slice(-400);
+  }
   function cleanDates(arr){
     var seen = {}, out = [];
     (Array.isArray(arr) ? arr : []).forEach(function(d){ d = String(d).slice(0, 10); if (/^\d{4}-\d{2}-\d{2}$/.test(d) && !seen[d]) { seen[d] = 1; out.push(d); } });
     return out.sort();
   }
-  var myStat = { n: 0, done: false, missed: 0, streak: 0 }, statusAt = 0;
+  var myStat = { n: 0, done: false, missed: 0, streak: 0, today: 0 }, statusAt = 0;
   function refreshStatus(){
     var today = ymd(new Date()), n = checkins.length, done = checkins.indexOf(today) !== -1;
     var last = n ? checkins[n - 1] : null, gap = last ? daysFrom(last, today) : 0;
@@ -648,7 +665,8 @@ button.google:hover{background:#eceff6}
       var d = new Date(); if (!done) d.setDate(d.getDate() - 1);
       while (set[ymd(d)]) { streak++; d.setDate(d.getDate() - 1); }
     }
-    myStat = { n: n, done: done, missed: missed, streak: streak };
+    var todayCount = sessions.filter(function(x){ return x === today; }).length;
+    myStat = { n: n, done: done, missed: missed, streak: streak, today: todayCount };
     statusAt = performance.now();
     if ($('vizModal').hidden) treeN = n;
   }
@@ -667,22 +685,24 @@ button.google:hover{background:#eceff6}
     for (var i = 0; i < cells.length; i++) cells[i].className = (i < n ? 'on' : '') + ((!myStat.done && i === n) ? ' next' : '');
     strip.setAttribute('aria-label', 'Your 30-day progress: ' + myStat.n + ' of 30 days done');
     if (!hasSaved) { checkBtn.textContent = 'Set up my tree'; checkBtn.disabled = false; }
-    else if (myStat.done) { checkBtn.textContent = 'Done for today'; checkBtn.disabled = true; }
+    else if (myStat.done) { checkBtn.textContent = 'Do it again'; checkBtn.disabled = false; }
     else { checkBtn.textContent = "Start today's visualization"; checkBtn.disabled = false; }
+    var tc = $('todayCount');
+    tc.hidden = !mine || !hasSaved || !myStat.today;
+    tc.textContent = myStat.today === 1 ? '1 time today' : myStat.today + ' times today';
     setPlayLabel();
   }
   function minePhase(){
     var st = myStat, n = st.n;
     if (sb && !checkinsReady) return { key: 'm-db', title: 'Daily check-ins are almost ready', text: 'The site needs a one-time database update before check-ins can be saved. Your goal and fruits still save as usual.', steps: [0,1,2] };
     if (!hasSaved) return { key: 'm-setup', title: 'Make this tree yours', text: 'Replace the example goal and fruits with your own and press Save. Then your daily 2-minute visualization unlocks.', steps: [0,1,2] };
-    if (st.done) return { key: 'm-done-' + n + '-' + st.streak, title: 'Day ' + n + ' done. Your tree grew.', text: (n >= 30 ? 'You finished all 30 days. Keep checking in to keep your tree full and green. ' : '') + (st.streak > 1 ? st.streak + '-day streak. ' : '') + 'Come back tomorrow for day ' + (n + 1) + '.', steps: [] };
+    if (st.done) return { key: 'm-done-' + n + '-' + st.streak + '-' + st.today, title: 'Day ' + n + ' done. Your tree grew.', text: (st.today > 1 ? 'You did your visualization ' + st.today + ' times today. ' : '') + (n >= 30 ? 'You finished all 30 days. Keep going to keep your tree full and green. ' : '') + (st.streak > 1 ? st.streak + '-day streak. ' : '') + 'Do it again any time, or come back tomorrow for day ' + (n + 1) + '.', steps: [3] };
     if (st.missed > 0) return { key: 'm-miss-' + st.missed, title: 'You missed ' + st.missed + (st.missed === 1 ? ' day' : ' days') + '. Your tree is dimming.', text: "Do today's 2 minutes to bring it back. Your progress is safe, and every check-in counts.", steps: [3,4] };
     return { key: 'm-ready-' + n + '-' + st.streak, title: n === 0 ? 'Ready for day 1' : 'Ready for day ' + (n + 1), text: 'Close your eyes for 2 minutes and feel your fruits as real. When you finish, your tree grows a day and a red root turns green.' + (st.streak > 0 ? ' ' + st.streak + '-day streak so far.' : ''), steps: [3,4] };
   }
   function startToday(){
     if (sb && !currentUser) { openAuth('up', 'Create a free account to build your own goal tree.'); return; }
     if (!hasSaved) { openEditor(); return; }
-    if (myStat.done) return;
     if (sb && !checkinsReady) { setStatus('Daily check-ins need a one-time database update before they can be saved.'); return; }
     openViz();
   }
@@ -716,14 +736,14 @@ button.google:hover{background:#eceff6}
     var want = new URL(TRACKS[i].src, location.href).href;
     if (audioEl.src !== want) audioEl.src = TRACKS[i].src;
   }
-  function startMusic(){
+  function mp3Start(){
     setTrack(trackIdx);
     var pr = audioEl.play(); if (pr && pr.catch) pr.catch(function(){});
     if (musicGain && actx) {
       var t = actx.currentTime; musicGain.gain.cancelScheduledValues(t); musicGain.gain.setValueAtTime(musicGain.gain.value, t); musicGain.gain.linearRampToValueAtTime(MUSIC_LEVEL, t + 3);
     } else { audioEl.volume = MUSIC_LEVEL; }
   }
-  function stopMusic(){
+  function mp3Stop(){
     if (!audioEl) return;
     var el = audioEl;
     if (musicGain && actx) {
@@ -732,6 +752,56 @@ button.google:hover{background:#eceff6}
     } else { el.pause(); }
   }
   function musicLabel(){ return musicOn ? 'Music: on' : 'Music: off'; }
+  var YT_ID = 'LhtUc5CbeiQ', ytPlayer = null, ytReady = false, ytFailed = false, ytLoading = false, ytFade = 0, YT_LEVEL = 80;
+  function loadYT(){
+    if (ytLoading || ytFailed) return;
+    ytLoading = true; $('ytWrap').hidden = false;
+    window.onYouTubeIframeAPIReady = function(){
+      if (ytFailed) return;
+      try {
+        ytPlayer = new YT.Player('ytPlayer', {
+          host: 'https://www.youtube-nocookie.com', videoId: YT_ID, width: '100%', height: '100%',
+          playerVars: { playsinline: 1, rel: 0, controls: 1, loop: 1, playlist: YT_ID },
+          events: {
+            onReady: function(){ if (ytFailed) return; ytReady = true; if (vizState === 'running' && musicOn) ytPlay(); },
+            onError: function(){ ytFail(); },
+            onStateChange: function(e){ if (e.data === 0 && vizState === 'running' && musicOn) { try { ytPlayer.seekTo(0, true); ytPlayer.playVideo(); } catch(err){} } }
+          }
+        });
+      } catch(e){ ytFail(); }
+    };
+    var sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.async = true; sc.onerror = ytFail;
+    document.head.appendChild(sc);
+    setTimeout(function(){ if (!ytReady) ytFail(); }, 9000);
+  }
+  function ytFail(){
+    if (ytReady || ytFailed) return;
+    ytFailed = true; $('ytWrap').hidden = true;
+    if (vizState === 'running' && musicOn) mp3Start();
+  }
+  function ytPlay(){
+    try {
+      clearInterval(ytFade); var v = 0; ytPlayer.setVolume(0); ytPlayer.playVideo();
+      ytFade = setInterval(function(){ v = Math.min(YT_LEVEL, v + 5); try { ytPlayer.setVolume(v); } catch(e){} if (v >= YT_LEVEL) clearInterval(ytFade); }, 150);
+    } catch(e){}
+  }
+  function ytStop(){
+    try {
+      clearInterval(ytFade); var v = ytPlayer.getVolume ? ytPlayer.getVolume() : YT_LEVEL;
+      ytFade = setInterval(function(){
+        v = Math.max(0, v - 8); try { ytPlayer.setVolume(v); } catch(e){}
+        if (v <= 0) { clearInterval(ytFade); if (!(vizState === 'running' && musicOn)) { try { ytPlayer.pauseVideo(); } catch(e){} } }
+      }, 120);
+    } catch(e){}
+  }
+  function startMusic(){
+    if (ytReady) ytPlay();
+    else if (ytFailed) mp3Start();
+  }
+  function stopMusic(){
+    if (ytReady) ytStop();
+    mp3Stop();
+  }
   function chime(vol){
     var ac = audioCtx(); if (!ac) return;
     var t = ac.currentTime;
@@ -757,7 +827,8 @@ button.google:hover{background:#eceff6}
   function releaseWake(){ try { if (wakeLock) wakeLock.release(); } catch(e){} wakeLock = null; }
   function openViz(){
     vizState = 'idle'; vizElapsed = 0; vizFruitIdx = -1; vizDone = false;
-    $('vizDay').textContent = myStat.n < 30 ? 'Day ' + (myStat.n + 1) + ' of 30' : 'Day ' + (myStat.n + 1);
+    var dn = myStat.done ? myStat.n : myStat.n + 1;
+    $('vizDay').textContent = (dn <= 30 ? 'Day ' + dn + ' of 30' : 'Day ' + dn) + (myStat.today ? ' · Session ' + (myStat.today + 1) + ' today' : '');
     $('vizTitle').textContent = 'Close your eyes and feel it as real';
     $('vizTime').textContent = fmt(VIZ_SECONDS); $('vizArc').style.strokeDashoffset = '0';
     $('vizHint').textContent = 'Ready when you are';
@@ -768,6 +839,8 @@ button.google:hover{background:#eceff6}
     $('vizSound').hidden = false; $('vizErr').textContent = '';
     $('vizSound').textContent = musicLabel(); $('vizSound').setAttribute('aria-pressed', musicOn ? 'true' : 'false');
     if (audioEl) { try { audioEl.pause(); audioEl.currentTime = 0; } catch(e){} }
+    loadYT();
+    if (ytReady) { try { clearInterval(ytFade); ytPlayer.pauseVideo(); ytPlayer.seekTo(0, true); } catch(e){} }
     lastFocusViz = document.activeElement; vizModal.hidden = false; $('vizStart').focus();
   }
   function closeViz(){
@@ -786,21 +859,19 @@ button.google:hover{background:#eceff6}
     if (left <= 0) vizFinish();
   }
   async function saveCheckin(){
-    var today = ymd(new Date());
-    if (checkins.indexOf(today) !== -1) { refreshStatus(); return { ok: true }; }
-    var next = cleanDates(checkins.concat([today]));
+    var today = ymd(new Date()), firstToday = checkins.indexOf(today) === -1;
+    var next = compactSessions(cleanSessions(sessions.concat([today])));
     if (!sb) {
-      checkins = next;
       try { localStorage.setItem('goal-tree-demo-checkins', JSON.stringify(next)); } catch(e){}
     } else {
       if (!currentUser) return { ok: false, msg: 'Please sign in again.' };
       var res = await sb.from('goal_trees').upsert({ user_id: currentUser.id, goal: data.goal, fruits: data.fruits, checkins: next, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
       if (res.error) { if (/checkins/i.test(res.error.message || '')) checkinsReady = false; return { ok: false, msg: res.error.message }; }
-      checkins = next;
     }
+    sessions = next; checkins = cleanDates(next);
     doubtTarget = 0; resetUntil = 0;
     refreshStatus(); renderDock();
-    return { ok: true };
+    return { ok: true, first: firstToday };
   }
   async function vizFinish(){
     clearInterval(vizTimer); vizState = 'saving'; stopMusic(); chime(0.22); releaseWake();
@@ -816,11 +887,19 @@ button.google:hover{background:#eceff6}
       return;
     }
     vizDone = true;
-    $('vizTitle').textContent = 'Day ' + myStat.n + ' complete';
-    $('vizHint').textContent = 'Checked in';
-    $('vizFruit').classList.remove('fade'); $('vizFruit').textContent = 'Your tree is about to grow a day.';
+    $('vizHint').textContent = myStat.today === 1 ? '1 time today' : myStat.today + ' times today';
+    $('vizFruit').classList.remove('fade');
+    if (r.first) {
+      $('vizTitle').textContent = 'Day ' + myStat.n + ' complete';
+      $('vizFruit').textContent = 'Your tree is about to grow a day.';
+      $('vizStart').textContent = 'See my tree grow';
+    } else {
+      $('vizTitle').textContent = 'Session ' + myStat.today + ' done today';
+      $('vizFruit').textContent = 'More evidence for your mind. Your roots just got stronger.';
+      $('vizStart').textContent = 'Back to my tree';
+    }
     $('vizPrompt').hidden = true;
-    $('vizStart').textContent = 'See my tree grow'; $('vizStart').focus();
+    $('vizStart').focus();
   }
   $('vizStart').addEventListener('click', function(){
     if (vizState === 'idle' || vizState === 'paused') {
@@ -850,7 +929,7 @@ button.google:hover{background:#eceff6}
   function openWelcome(){
     lastFocusW = document.activeElement;
     var signedIn = sb ? !!currentUser : true;
-    $('wStart').textContent = !signedIn ? 'Start free' : (!hasSaved ? 'Set up my tree' : (myStat.done ? 'Back to my tree' : "Start today's visualization"));
+    $('wStart').textContent = !signedIn ? 'Start free' : (!hasSaved ? 'Set up my tree' : (myStat.done ? 'Do another session' : "Start today's visualization"));
     welcome.hidden = false; $('wStart').focus();
   }
   function closeWelcome(){
@@ -874,7 +953,7 @@ button.google:hover{background:#eceff6}
   });
 
   if (!sb) {
-    try { hasSaved = !!localStorage.getItem('goal-tree-demo'); checkins = cleanDates(JSON.parse(localStorage.getItem('goal-tree-demo-checkins') || '[]')); } catch(e){}
+    try { hasSaved = !!localStorage.getItem('goal-tree-demo'); sessions = cleanSessions(JSON.parse(localStorage.getItem('goal-tree-demo-checkins') || '[]')); checkins = cleanDates(sessions); } catch(e){}
     setTimeout(maybeWelcome, 400);
   }
   refreshStatus();
@@ -892,7 +971,7 @@ button.google:hover{background:#eceff6}
       }
       if (changed) {
         if (u) { previewing = false; setTimeout(loadMine, 0); }
-        else { data = copyExamples(); hasSaved = false; checkins = []; previewing = false; applyText(); closeEditor(); setStatus(''); refreshStatus(); renderDock(); }
+        else { data = copyExamples(); hasSaved = false; checkins = []; sessions = []; previewing = false; applyText(); closeEditor(); setStatus(''); refreshStatus(); renderDock(); }
       }
       if (event === 'INITIAL_SESSION' && !u) setTimeout(maybeWelcome, 300);
     });

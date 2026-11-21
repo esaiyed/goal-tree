@@ -2,7 +2,7 @@
 
 A public website with the 3D goal tree. Anyone can create a free account with their name and email. Each person's power goal, six fruits and daily check-ins are saved privately to their own account.
 
-**How it works for visitors:** a welcome pop-up explains the 3 setup steps. After signing up, people write their goal and fruits, then each day press "Start today's visualization" for a 2-minute guided session (timer, soft music, one fruit at a time). Finishing checks them in: their tree grows a day and a red root turns green. Missed days dim the tree until they check in again.
+**How it works for visitors:** a welcome pop-up explains the 3 setup steps. After signing up, people write their goal and fruits, then each day press "Start today's visualization" for a 2-minute guided session (timer, music, one fruit at a time). The first session each day grows their tree a day and turns a red root green. They can repeat the session as often as they like, and the site shows how many times they did it today. Missed days dim the tree until they check in again.
 
 ## What's in this folder
 
@@ -80,9 +80,9 @@ Open a chat with Claude (with GitHub connected) and describe the change, for exa
 
 ## Music
 
-The 2-minute visualization plays "Deep Meditation" by AtlasAudio, from Pixabay, used under the Pixabay Content License. People can turn it on or off with the Music button, and their choice is remembered on their device.
+The 2-minute visualization plays "Only One Of Us Will Make It" (Release) through YouTube's official embedded player, which shows inside the timer (YouTube requires the player to stay visible). If YouTube cannot load, the timer falls back to "Deep Meditation" by AtlasAudio from Pixabay (`music/deep-meditation.mp3`, Pixabay Content License). People can turn music on or off with the Music button, and their choice is remembered on their device.
 
-To swap the track, replace `music/deep-meditation.mp3` with a new file of the same name, or ask Claude to do it.
+To use a different YouTube song, change `YT_ID` in `index.html` to the new video's ID, or ask Claude to do it.
 
 ## Privacy
 
