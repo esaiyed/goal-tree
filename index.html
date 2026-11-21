@@ -838,6 +838,18 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   function musicLabel(){ return musicOn ? 'Music: on' : 'Music: off'; }
   function startMusic(){ mp3Start(); }
   function stopMusic(fadeSec){ mp3Stop(fadeSec); }
+  // The track ends on its own (big chord at 2:00, then a short fade), so let it play out
+  function musicRingOut(){
+    if (!audioEl || audioEl.paused) return;
+    var left = isFinite(audioEl.duration) ? audioEl.duration - audioEl.currentTime : 0;
+    if (!(left > 0 && left < 8)) { stopMusic(); return; }
+    var el = audioEl;
+    setTimeout(function(){
+      if (vizState === 'running' && musicOn) return;
+      el.pause();
+      if (musicGain && actx) { var t = actx.currentTime; musicGain.gain.cancelScheduledValues(t); musicGain.gain.setValueAtTime(0, t); }
+    }, left * 1000 + 150);
+  }
 
   var vizModal = $('vizModal'), vizState = 'idle', vizElapsed = 0, vizStartAt = 0, vizTimer = 0, vizFruitIdx = -1, wakeLock = null, musicOn = true, lastFocusViz = null, vizDone = false;
   var VIZ_SECONDS = 120, ARC = 326.73;
@@ -901,7 +913,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     return { ok: true, first: firstToday };
   }
   async function vizFinish(){
-    clearInterval(vizTimer); vizState = 'saving'; stopMusic(); releaseWake();
+    clearInterval(vizTimer); vizState = 'saving'; musicRingOut(); releaseWake();
     $('vizTime').textContent = '0:00'; $('vizArc').style.strokeDashoffset = ARC.toFixed(2);
     $('vizHint').textContent = 'Saving your check-in'; $('vizStart').disabled = true; $('vizSound').hidden = true;
     var r = await saveCheckin();
