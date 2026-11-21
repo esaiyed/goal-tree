@@ -170,7 +170,7 @@ button.google:hover{background:#eceff6}
 .vizprompt[hidden]{display:none}
 .vizrow{justify-content:center}
 #vizSound[hidden]{display:none}
-#vizSound{min-width:190px}
+#vizSound{min-width:120px}
 #saveBtn{background:var(--gold);color:#1d1605;border-color:transparent;font-weight:700}
 #saveBtn:hover{background:#ffcb63}
 #saveBtn:disabled{opacity:.6;cursor:wait}
@@ -347,7 +347,7 @@ button.google:hover{background:#eceff6}
     <p class="vizgoal" id="vizGoal"></p>
     <p class="vizfruit" id="vizFruit" aria-live="polite"></p>
     <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? A soft chime plays when each new fruit comes up and when your 2 minutes are done. Headphones help.</p>
-    <div class="row vizrow"><button type="button" class="primary" id="vizStart">Start 2 minutes</button><button type="button" id="vizSound" aria-pressed="true">Music: Deep meditation</button></div>
+    <div class="row vizrow"><button type="button" class="primary" id="vizStart">Start 2 minutes</button><button type="button" id="vizSound" aria-pressed="true">Music: on</button></div>
     <p class="err" id="vizErr" role="alert"></p>
   </div>
 </div>
@@ -700,8 +700,7 @@ button.google:hover{background:#eceff6}
     return actx;
   }
   var TRACKS = [
-    { name: 'Deep meditation', src: 'music/deep-meditation.mp3' },
-    { name: 'Deep ambient', src: 'music/deep-ambient.mp3' }
+    { name: 'Deep meditation', src: 'music/deep-meditation.mp3' }
   ];
   var trackIdx = 0, audioEl = null, audioSrcNode = null, musicGain = null, MUSIC_LEVEL = 0.75;
   function ensureAudio(){
@@ -732,7 +731,7 @@ button.google:hover{background:#eceff6}
       setTimeout(function(){ if (!(vizState === 'running' && musicOn)) el.pause(); }, 1600);
     } else { el.pause(); }
   }
-  function musicLabel(){ return 'Music: ' + (musicOn ? TRACKS[trackIdx].name : 'off'); }
+  function musicLabel(){ return musicOn ? 'Music: on' : 'Music: off'; }
   function chime(vol){
     var ac = audioCtx(); if (!ac) return;
     var t = ac.currentTime;
@@ -836,12 +835,10 @@ button.google:hover{background:#eceff6}
       clearInterval(vizTimer); stopMusic(); releaseWake();
     } else if (vizState === 'done') { closeViz(); }
   });
-  try { var savedMusic = localStorage.getItem('goal-tree-music'); if (savedMusic === 'off') musicOn = false; else if (savedMusic && TRACKS[+savedMusic]) trackIdx = +savedMusic; } catch(e){}
+  try { var savedMusic = localStorage.getItem('goal-tree-music'); if (savedMusic === 'off') musicOn = false; } catch(e){}
   $('vizSound').addEventListener('click', function(){
-    if (musicOn && trackIdx < TRACKS.length - 1) trackIdx++;
-    else if (musicOn) musicOn = false;
-    else { musicOn = true; trackIdx = 0; }
-    try { localStorage.setItem('goal-tree-music', musicOn ? String(trackIdx) : 'off'); } catch(e){}
+    musicOn = !musicOn; trackIdx = 0;
+    try { localStorage.setItem('goal-tree-music', musicOn ? 'on' : 'off'); } catch(e){}
     this.textContent = musicLabel(); this.setAttribute('aria-pressed', musicOn ? 'true' : 'false');
     if (vizState === 'running') { if (musicOn) startMusic(); else stopMusic(); }
   });
