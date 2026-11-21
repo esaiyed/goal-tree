@@ -155,9 +155,6 @@ button.google:hover{background:#eceff6}
 .wsteps b,.wdaily b{color:var(--text);font-weight:700}
 .welcome .row{margin-top:6px}
 .vizbox{width:min(440px,100%);text-align:center;justify-items:center;max-height:calc(100% - 24px);overflow:auto}
-.ytwrap{width:100%;max-width:360px;height:200px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#000}
-.ytwrap[hidden]{display:none}
-.ytwrap iframe{width:100%;height:100%;display:block;border:0}
 .today-count{font-size:12px;font-weight:700;color:#aef4d2;background:rgba(94,230,168,.12);border:1px solid rgba(94,230,168,.45);border-radius:999px;padding:4px 10px;font-variant-numeric:tabular-nums}
 .today-count[hidden]{display:none}
 .vizbox h2{padding:0 24px}
@@ -352,8 +349,7 @@ button.google:hover{background:#eceff6}
     </div>
     <p class="vizgoal" id="vizGoal"></p>
     <p class="vizfruit" id="vizFruit" aria-live="polite"></p>
-    <div class="ytwrap" id="ytWrap" hidden><div id="ytPlayer"></div></div>
-    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? A soft chime plays when each new fruit comes up and when your 2 minutes are done. Headphones help. If the music does not start, tap play on the video.</p>
+    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? Headphones help. The music fades out when your 2 minutes are done.</p>
     <div class="row vizrow"><button type="button" class="primary" id="vizStart">Start 2 minutes</button><button type="button" id="vizSound" aria-pressed="true">Music: on</button></div>
     <p class="err" id="vizErr" role="alert"></p>
   </div>
@@ -752,66 +748,8 @@ button.google:hover{background:#eceff6}
     } else { el.pause(); }
   }
   function musicLabel(){ return musicOn ? 'Music: on' : 'Music: off'; }
-  var YT_ID = 'LhtUc5CbeiQ', ytPlayer = null, ytReady = false, ytFailed = false, ytLoading = false, ytFade = 0, YT_LEVEL = 80;
-  function loadYT(){
-    if (ytLoading || ytFailed) return;
-    ytLoading = true; $('ytWrap').hidden = false;
-    window.onYouTubeIframeAPIReady = function(){
-      if (ytFailed) return;
-      try {
-        ytPlayer = new YT.Player('ytPlayer', {
-          host: 'https://www.youtube-nocookie.com', videoId: YT_ID, width: '100%', height: '100%',
-          playerVars: { playsinline: 1, rel: 0, controls: 1, loop: 1, playlist: YT_ID },
-          events: {
-            onReady: function(){ if (ytFailed) return; ytReady = true; if (vizState === 'running' && musicOn) ytPlay(); },
-            onError: function(){ ytFail(); },
-            onStateChange: function(e){ if (e.data === 0 && vizState === 'running' && musicOn) { try { ytPlayer.seekTo(0, true); ytPlayer.playVideo(); } catch(err){} } }
-          }
-        });
-      } catch(e){ ytFail(); }
-    };
-    var sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.async = true; sc.onerror = ytFail;
-    document.head.appendChild(sc);
-    setTimeout(function(){ if (!ytReady) ytFail(); }, 9000);
-  }
-  function ytFail(){
-    if (ytReady || ytFailed) return;
-    ytFailed = true; $('ytWrap').hidden = true;
-    if (vizState === 'running' && musicOn) mp3Start();
-  }
-  function ytPlay(){
-    try {
-      clearInterval(ytFade); var v = 0; ytPlayer.setVolume(0); ytPlayer.playVideo();
-      ytFade = setInterval(function(){ v = Math.min(YT_LEVEL, v + 5); try { ytPlayer.setVolume(v); } catch(e){} if (v >= YT_LEVEL) clearInterval(ytFade); }, 150);
-    } catch(e){}
-  }
-  function ytStop(){
-    try {
-      clearInterval(ytFade); var v = ytPlayer.getVolume ? ytPlayer.getVolume() : YT_LEVEL;
-      ytFade = setInterval(function(){
-        v = Math.max(0, v - 8); try { ytPlayer.setVolume(v); } catch(e){}
-        if (v <= 0) { clearInterval(ytFade); if (!(vizState === 'running' && musicOn)) { try { ytPlayer.pauseVideo(); } catch(e){} } }
-      }, 120);
-    } catch(e){}
-  }
-  function startMusic(){
-    if (ytReady) ytPlay();
-    else if (ytFailed) mp3Start();
-  }
-  function stopMusic(){
-    if (ytReady) ytStop();
-    mp3Stop();
-  }
-  function chime(vol){
-    var ac = audioCtx(); if (!ac) return;
-    var t = ac.currentTime;
-    [523.25, 783.99, 1046.5].forEach(function(f, i){
-      var o = ac.createOscillator(), g = ac.createGain(), at = t + i*0.14;
-      o.type = 'sine'; o.frequency.value = f;
-      g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(vol, at + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, at + 2.4);
-      o.connect(g); g.connect(ac.destination); o.start(at); o.stop(at + 2.5);
-    });
-  }
+  function startMusic(){ mp3Start(); }
+  function stopMusic(){ mp3Stop(); }
 
   var vizModal = $('vizModal'), vizState = 'idle', vizElapsed = 0, vizStartAt = 0, vizTimer = 0, vizFruitIdx = -1, wakeLock = null, musicOn = true, lastFocusViz = null, vizDone = false;
   var VIZ_SECONDS = 120, ARC = 326.73;
@@ -839,8 +777,6 @@ button.google:hover{background:#eceff6}
     $('vizSound').hidden = false; $('vizErr').textContent = '';
     $('vizSound').textContent = musicLabel(); $('vizSound').setAttribute('aria-pressed', musicOn ? 'true' : 'false');
     if (audioEl) { try { audioEl.pause(); audioEl.currentTime = 0; } catch(e){} }
-    loadYT();
-    if (ytReady) { try { clearInterval(ytFade); ytPlayer.pauseVideo(); ytPlayer.seekTo(0, true); } catch(e){} }
     lastFocusViz = document.activeElement; vizModal.hidden = false; $('vizStart').focus();
   }
   function closeViz(){
@@ -855,7 +791,7 @@ button.google:hover{background:#eceff6}
     $('vizTime').textContent = fmt(left);
     $('vizArc').style.strokeDashoffset = (ARC * Math.min(1, el / VIZ_SECONDS)).toFixed(2);
     var fi = Math.min(5, Math.floor(el / (VIZ_SECONDS / 6)));
-    if (fi !== vizFruitIdx) { if (vizFruitIdx >= 0) chime(0.07); showFruit(fi); }
+    if (fi !== vizFruitIdx) showFruit(fi);
     if (left <= 0) vizFinish();
   }
   async function saveCheckin(){
@@ -874,7 +810,7 @@ button.google:hover{background:#eceff6}
     return { ok: true, first: firstToday };
   }
   async function vizFinish(){
-    clearInterval(vizTimer); vizState = 'saving'; stopMusic(); chime(0.22); releaseWake();
+    clearInterval(vizTimer); vizState = 'saving'; stopMusic(); releaseWake();
     $('vizTime').textContent = '0:00'; $('vizArc').style.strokeDashoffset = ARC.toFixed(2);
     $('vizHint').textContent = 'Saving your check-in'; $('vizStart').disabled = true; $('vizSound').hidden = true;
     var r = await saveCheckin();
@@ -905,7 +841,6 @@ button.google:hover{background:#eceff6}
     if (vizState === 'idle' || vizState === 'paused') {
       audioCtx();
       if (musicOn) startMusic();
-      if (vizState === 'idle') chime(0.08);
       vizStartAt = performance.now(); vizState = 'running'; this.textContent = 'Pause';
       requestWake(); clearInterval(vizTimer); vizTimer = setInterval(vizTick, 250); vizTick();
     } else if (vizState === 'running') {

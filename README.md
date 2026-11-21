@@ -80,9 +80,9 @@ Open a chat with Claude (with GitHub connected) and describe the change, for exa
 
 ## Music
 
-The 2-minute visualization plays "Only One Of Us Will Make It" (Release) through YouTube's official embedded player, which shows inside the timer (YouTube requires the player to stay visible). If YouTube cannot load, the timer falls back to "Deep Meditation" by AtlasAudio from Pixabay (`music/deep-meditation.mp3`, Pixabay Content License). People can turn music on or off with the Music button, and their choice is remembered on their device.
+The 2-minute visualization plays "Deep Meditation" by AtlasAudio, from Pixabay, used under the Pixabay Content License. It plays as audio only, fades in when a session starts and fades out when the 2 minutes are done. There are no chimes. People can turn music on or off with the Music button, and their choice is remembered on their device.
 
-To use a different YouTube song, change `YT_ID` in `index.html` to the new video's ID, or ask Claude to do it.
+To swap the track, replace `music/deep-meditation.mp3` with a new file of the same name, or ask Claude to do it. Use music you have the rights to put on a website (Pixabay tracks are fine). YouTube songs can't be used as hidden background audio.
 
 ## Privacy
 
