@@ -212,6 +212,11 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
 .vizprompt{max-width:340px}
 .vizprompt[hidden]{display:none}
 .vizrow{justify-content:center}
+.vizmain{display:grid;justify-items:center;gap:12px;width:100%}
+.vizmain[hidden],.prep[hidden]{display:none}
+.prep{margin:4px 0;padding:0;list-style:none;counter-reset:pp;display:grid;gap:12px;width:100%;text-align:left}
+.prep li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;font-size:15px;line-height:1.5;color:var(--text)}
+.prep li::before{counter-increment:pp;content:counter(pp);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(245,185,66,.16);border:1px solid rgba(245,185,66,.55);color:#ffe2a0;font-weight:700;font-size:13px;box-sizing:border-box}
 #vizSound[hidden]{display:none}
 #vizSound{min-width:120px}
 #saveBtn{background:var(--gold);color:#1d1605;border-color:transparent;font-weight:700}
@@ -402,15 +407,24 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   <div class="dialog vizbox" role="dialog" aria-modal="true" aria-labelledby="vizTitle">
     <button type="button" class="x" id="vizClose" aria-label="Close">&times;</button>
     <p class="eyebrow" id="vizDay">Day 1 of 30</p>
-    <h2 id="vizTitle">Close your eyes and feel it as real</h2>
+    <h2 id="vizTitle">Before you begin</h2>
+    <ol class="prep" id="vizPrep">
+      <li>Find a quiet place where you can be alone and won't be interrupted.</li>
+      <li>Put on headphones for the deepest experience.</li>
+      <li>Close your eyes.</li>
+      <li>Take three slow, deep breaths.</li>
+      <li>Picture your fruits as if they've already come true. Feel what it's like to have no worries, knowing everything is taken care of.</li>
+    </ol>
+    <div class="vizmain" id="vizMain" hidden>
     <div class="ring">
       <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="rtrack"></circle><circle cx="60" cy="60" r="52" class="rarc" id="vizArc"></circle></svg>
       <div class="ringtxt"><span id="vizTime">2:00</span><small id="vizHint">Ready when you are</small></div>
     </div>
     <p class="vizgoal" id="vizGoal"></p>
     <p class="vizfruit" id="vizFruit" aria-live="polite"></p>
-    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? Headphones help. The music fades out when your 2 minutes are done.</p>
-    <div class="row vizrow"><button type="button" class="primary" id="vizStart">Start 2 minutes</button><button type="button" id="vizSound" aria-pressed="true">Music: on</button></div>
+    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? The music fades out when your 2 minutes are done.</p>
+    </div>
+    <div class="row vizrow"><button type="button" class="primary" id="vizStart">I'm ready, start 2 minutes</button><button type="button" id="vizSound" aria-pressed="true">Music: on</button></div>
     <p class="err" id="vizErr" role="alert"></p>
   </div>
 </div>
@@ -828,13 +842,14 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     vizState = 'idle'; vizElapsed = 0; vizFruitIdx = -1; vizDone = false;
     var dn = myStat.done ? myStat.n : myStat.n + 1;
     $('vizDay').textContent = (dn <= 30 ? 'Day ' + dn + ' of 30' : 'Day ' + dn) + (myStat.today ? ' · Session ' + (myStat.today + 1) + ' today' : '');
-    $('vizTitle').textContent = 'Close your eyes and feel it as real';
+    $('vizTitle').textContent = 'Before you begin';
+    $('vizPrep').hidden = false; $('vizMain').hidden = true;
     $('vizTime').textContent = fmt(VIZ_SECONDS); $('vizArc').style.strokeDashoffset = '0';
     $('vizHint').textContent = 'Ready when you are';
     $('vizGoal').textContent = 'Your power goal: ' + data.goal;
     $('vizFruit').textContent = data.fruits[0];
     $('vizPrompt').hidden = false;
-    $('vizStart').textContent = 'Start 2 minutes'; $('vizStart').disabled = false;
+    $('vizStart').textContent = "I'm ready, start 2 minutes"; $('vizStart').disabled = false;
     $('vizSound').hidden = false; $('vizErr').textContent = '';
     $('vizSound').textContent = musicLabel(); $('vizSound').setAttribute('aria-pressed', musicOn ? 'true' : 'false');
     if (audioEl) { try { audioEl.pause(); audioEl.currentTime = 0; } catch(e){} }
@@ -900,6 +915,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   }
   $('vizStart').addEventListener('click', function(){
     if (vizState === 'idle' || vizState === 'paused') {
+      if (vizState === 'idle') { $('vizPrep').hidden = true; $('vizMain').hidden = false; $('vizTitle').textContent = 'Close your eyes and feel it as real'; }
       audioCtx();
       if (musicOn) startMusic();
       vizStartAt = performance.now(); vizState = 'running'; this.textContent = 'Pause';
