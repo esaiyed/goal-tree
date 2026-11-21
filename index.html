@@ -75,6 +75,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);overflow:hid
 .eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin:0 0 6px;font-weight:700}
 h1{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,34px);line-height:1.15;margin:0;text-wrap:balance}
 .sub{color:var(--muted);font-size:14px;line-height:1.5;margin:8px 0 0;max-width:340px}
+.whatbtn{pointer-events:auto;display:inline-block;margin-top:12px;font-size:13px;font-weight:600;color:#ffe2a0;background:rgba(245,185,66,.12);border:1px solid rgba(245,185,66,.55);border-radius:999px;padding:7px 14px}
+.whatbtn:hover{background:rgba(245,185,66,.24)}
+.whatwatch{margin:0;font-size:14px;line-height:1.55;color:var(--muted);background:rgba(245,185,66,.08);border:1px solid rgba(245,185,66,.3);border-radius:10px;padding:10px 12px}
+.whatwatch a{color:#ffe2a0;font-weight:700}
+button.link.whatlink{color:#ffe2a0;font-size:13px;padding:0}
 #panel{position:fixed;top:64px;right:16px;width:290px;max-height:calc(100% - 250px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:18px;box-sizing:border-box}
 #panel h2{font-family:var(--display);font-size:13px;font-weight:600;margin:0 0 10px;letter-spacing:.02em}
 .meters{display:grid;gap:10px}
@@ -242,6 +247,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   .acct-label{display:none}
   .title{top:62px;right:16px;max-width:none}
   .sub{display:none}
+  .whatbtn{margin-top:8px;padding:6px 12px;font-size:12.5px}
   .lbl .txt{max-width:170px}
   .phase{min-height:0}
 }
@@ -260,6 +266,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   <p class="eyebrow" id="eyebrow">Your 30-day goal tree</p>
   <h1 id="heroTitle">Reprogram your mind</h1>
   <p class="sub" id="heroSub">Drag to turn the tree, scroll or pinch to zoom. Press play to watch 30 days of daily visualization change the roots, the goal and the fruits.</p>
+  <button id="whatBtn" type="button" class="whatbtn" aria-haspopup="dialog">What is Reprogram Your Mind?</button>
 </header>
 
 <div id="topbar">
@@ -377,7 +384,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     <button type="button" class="x" id="wClose" aria-label="Close">&times;</button>
     <p class="eyebrow">Welcome</p>
     <h2 id="wTitle">Grow your 30-day goal tree</h2>
-    <p class="lead">Your mind acts on the evidence you feed it. This tree lets you watch that happen: the roots are your subconscious, the trunk is your goal, and the fruits are your stresses, solved.</p>
+    <p class="lead">Your mind acts on the evidence you feed it. This tree lets you watch that happen: the roots are your subconscious, the trunk is your goal, and the fruits are your stresses, solved. <button type="button" class="link whatlink" id="wWhat">What is Reprogram Your Mind?</button></p>
     <h3>Set it up once</h3>
     <ol class="wsteps">
       <li><b>Write your 3 to 5 biggest stresses.</b> The things on your mind at night and when you wake up.</li>
@@ -392,6 +399,35 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     </ul>
     <div class="row"><button type="button" class="primary" id="wStart">Start free</button><button type="button" id="wLater">Look around first</button></div>
     <p class="note">Free account. Your goal and fruits stay private to you.</p>
+  </div>
+</div>
+
+<div id="whatModal" class="modal" hidden>
+  <div class="dialog welcome" role="dialog" aria-modal="true" aria-labelledby="whatTitle">
+    <button type="button" class="x" id="whatClose" aria-label="Close">&times;</button>
+    <p class="eyebrow">Why this site exists</p>
+    <h2 id="whatTitle">What is Reprogram Your Mind?</h2>
+    <p class="lead">You probably just watched Rav Malik's training, <i>How to Reprogram Your Mind for Fast Growth</i>, and now you're wondering how to actually do it every day. That's what this site is for. It turns his tree and his 2-minute visualization into a simple daily habit you can see.</p>
+    <p class="whatwatch">Haven't watched it yet? Start there, then come back. <a href="https://stayallinapp.com/learn/1432c310-881a-45b8-a9fa-c5deadca29aa" target="_blank" rel="noopener">Watch the training</a></p>
+    <h3>The big ideas from the training</h3>
+    <ul class="wdaily">
+      <li><b>Willpower fades.</b> You get fired up at an event, then the feeling wears off and the goal keeps shrinking. Lasting change starts in your subconscious mind.</li>
+      <li><b>Your life is a tree.</b> The fruits are the life you want: your biggest stresses, solved. The trunk is your power goal. The roots are your subconscious, full of evidence from everything you have been through.</li>
+      <li><b>Your subconscious speaks emotion, not words.</b> Affirmations, motivational videos and scrolling don't reach it. Feelings do. Money means nothing to it; the feeling money brings is what counts.</li>
+      <li><b>Pick a goal your mind will accept.</b> Write your 3 to 5 biggest stresses and picture them gone. Those are your fruits. Then choose the goal that would make all of them real. If it feels impossible, your subconscious rejects it and pulls you back like a rubber band.</li>
+      <li><b>Picture the fruits, not the how.</b> Close your eyes, play emotional music with no words, and for 2 minutes feel your problems as already gone. This drips new evidence into your roots and gives you power and hope.</li>
+      <li><b>Repeat it, especially when things go wrong.</b> Your mind is a muscle and will slide back at first. When doubt or frustration hits, snap the rubber band, put your headphones in and see your fruits again. Over time you start getting prompts: small ideas of what to do next.</li>
+      <li><b>Build from vision, not crisis.</b> You don't have to wait for things to fall apart. You can start today.</li>
+    </ul>
+    <h3>How this site helps</h3>
+    <ul class="wdaily">
+      <li><b>Your own tree.</b> Write your power goal and fruits once. They are saved to your private 3D tree.</li>
+      <li><b>2 minutes a day, guided.</b> Press start and close your eyes. Your fruits appear one at a time while the music builds to its peak at the 2-minute mark.</li>
+      <li><b>Watch your roots change.</b> Each day you do it turns a red root green and grows your tree. Skip days and it starts to dim.</li>
+      <li><b>As often as you need.</b> Do extra sessions whenever doubt hits. The calendar counts every one.</li>
+    </ul>
+    <div class="row"><button type="button" class="primary" id="whatStart">Start free</button><button type="button" id="whatLater">Close</button></div>
+    <p class="note">A free practice tool made to go with Rav Malik's training. It is not an official Rav Malik or Stay All In site.</p>
   </div>
 </div>
 
@@ -967,8 +1003,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   var welcome = $('welcome'), lastFocusW = null;
   function openWelcome(){
     lastFocusW = document.activeElement;
-    var signedIn = sb ? !!currentUser : true;
-    $('wStart').textContent = !signedIn ? 'Start free' : (!hasSaved ? 'Set up my tree' : (myStat.done ? 'Do another session' : "Start today's visualization"));
+    $('wStart').textContent = startLabel();
     welcome.hidden = false; $('wStart').focus();
   }
   function closeWelcome(){
@@ -981,13 +1016,35 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     if (!seen && authModal.hidden && vizModal.hidden && (sb ? !currentUser : true)) openWelcome();
   }
   $('howBtn').addEventListener('click', openWelcome);
+  var whatModal = $('whatModal'), lastFocusWhat = null;
+  function startLabel(){
+    var signedIn = sb ? !!currentUser : true;
+    return !signedIn ? 'Start free' : (!hasSaved ? 'Set up my tree' : (myStat.done ? 'Do another session' : "Start today's visualization"));
+  }
+  function openWhat(){
+    lastFocusWhat = welcome.hidden ? document.activeElement : $('whatBtn');
+    if (!welcome.hidden) closeWelcome();
+    $('whatStart').textContent = startLabel();
+    whatModal.hidden = false; whatModal.querySelector('.dialog').scrollTop = 0; $('whatClose').focus();
+  }
+  function closeWhat(){
+    whatModal.hidden = true;
+    if (lastFocusWhat && lastFocusWhat.focus) lastFocusWhat.focus();
+  }
+  $('whatBtn').addEventListener('click', openWhat);
+  $('wWhat').addEventListener('click', openWhat);
+  $('whatClose').addEventListener('click', closeWhat);
+  $('whatLater').addEventListener('click', closeWhat);
+  whatModal.addEventListener('click', function(e){ if (e.target === whatModal) closeWhat(); });
+  $('whatStart').addEventListener('click', function(){ closeWhat(); startToday(); });
   $('wClose').addEventListener('click', closeWelcome);
   $('wLater').addEventListener('click', closeWelcome);
   welcome.addEventListener('click', function(e){ if (e.target === welcome) closeWelcome(); });
   $('wStart').addEventListener('click', function(){ closeWelcome(); startToday(); });
   document.addEventListener('keydown', function(e){
     if (e.key !== 'Escape') return;
-    if (!welcome.hidden) closeWelcome();
+    if (!whatModal.hidden) closeWhat();
+    else if (!welcome.hidden) closeWelcome();
     else if (!vizModal.hidden && vizState !== 'running' && vizState !== 'saving') closeViz();
   });
 
@@ -1421,10 +1478,15 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   for (var fpi = 0; fpi < 16; fpi++) { var fan = fpi/16*Math.PI*2; fitPts.push(new V3(Math.cos(fan)*R, -D, Math.sin(fan)*R), new V3(Math.cos(fan)*R, 0, Math.sin(fan)*R)); }
   fitPts.push(new V3(cc.x, canopyTop + 0.4, cc.z), new V3(cc.x + canopyR, cc.y, cc.z), new V3(cc.x - canopyR, cc.y, cc.z), new V3(cc.x, cc.y, cc.z + canopyR), new V3(cc.x, cc.y, cc.z - canopyR));
   var viewOff = { x: 0, y: 0 }, fitDist = 0, lastFreeKey = '', lastLayoutCheck = 0;
+  function heroBottom(){
+    var b = $('heroTitle').getBoundingClientRect().bottom, wb = $('whatBtn');
+    if (wb.getClientRects().length) b = Math.max(b, wb.getBoundingClientRect().bottom);
+    return b;
+  }
   function freeArea(){
     var w = stage.clientWidth || window.innerWidth, h = stage.clientHeight || window.innerHeight;
     var top = 70;
-    if (w < 860) top = Math.max(top, $('heroTitle').getBoundingClientRect().bottom + 10);
+    if (w < 860) top = Math.max(top, heroBottom() + 10);
     if (w < 600) top = Math.max(top, lblFruit.getBoundingClientRect().bottom + 12);
     var bottom = Math.min(h - 8, $('dock').getBoundingClientRect().top - 10);
     var right = w - 8, pEl = $('panel');
@@ -1554,7 +1616,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     cen.set(cc.x*gx, cc.y*grow, cc.z*gx);
     camRight.setFromMatrixColumn(camera.matrixWorld, 0);
     place(lblFruit, wv.set(cc.x*gx, (canopyTop + 0.15)*grow, cc.z*gx));
-    if (W < 600) { lblFruit.style.visibility = ''; lblFruit.style.transform = 'translate(16px,' + ($('heroTitle').getBoundingClientRect().bottom + 8).toFixed(1) + 'px)'; }
+    if (W < 600) { lblFruit.style.visibility = ''; lblFruit.style.transform = 'translate(16px,' + (heroBottom() + 8).toFixed(1) + 'px)'; }
     place(lblTrunk, wv.set(0.3*gx, 1.35*grow, 0));
     var rA = toScreen(wv.set(0, -0.35, 0).addScaledVector(camRight, -3.6), W, Hh), rw = lblRoots.offsetWidth || 200;
     if (rA.x - rw < 8) {

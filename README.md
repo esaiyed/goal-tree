@@ -2,7 +2,7 @@
 
 A public website with the 3D goal tree. Anyone can create a free account with their name and email. Each person's power goal, six fruits and daily check-ins are saved privately to their own account.
 
-**How it works for visitors:** a welcome pop-up explains the 3 setup steps. After signing up, people write their goal and fruits, then each day press "Start today's visualization" for a 2-minute guided session (timer, music, one fruit at a time). The first session each day grows their tree a day and turns a red root green. They can repeat the session as often as they like, and the site shows how many times they did it today. Missed days dim the tree until they check in again.
+**How it works for visitors:** a welcome pop-up explains the 3 setup steps. A "What is Reprogram Your Mind?" button under the title opens a short explainer: it links to Rav Malik's training on Stay All In, sums up its main ideas, and shows how the site helps. After signing up, people write their goal and fruits, then each day press "Start today's visualization" for a 2-minute guided session (timer, music, one fruit at a time). The first session each day grows their tree a day and turns a red root green. They can repeat the session as often as they like, and the site shows how many times they did it today. Missed days dim the tree until they check in again.
 
 ## What's in this folder
 
