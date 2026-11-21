@@ -213,6 +213,10 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
 .vizprompt[hidden]{display:none}
 .vizrow{justify-content:center}
 .vizmain{display:grid;justify-items:center;gap:12px;width:100%}
+.vizrow2{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;align-items:center}
+.nowplaying{width:200px;height:200px;flex:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#000}
+.nowplaying[hidden]{display:none}
+.nowplaying iframe{width:100%;height:100%;border:0;display:block}
 .vizmain[hidden],.prep[hidden]{display:none}
 .prep{margin:4px 0;padding:0;list-style:none;counter-reset:pp;display:grid;gap:12px;width:100%;text-align:left}
 .prep li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;font-size:15px;line-height:1.5;color:var(--text)}
@@ -416,13 +420,16 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
       <li>Picture your fruits as if they've already come true. Feel what it's like to have no worries, knowing everything is taken care of.</li>
     </ol>
     <div class="vizmain" id="vizMain" hidden>
+    <div class="vizrow2">
     <div class="ring">
       <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="rtrack"></circle><circle cx="60" cy="60" r="52" class="rarc" id="vizArc"></circle></svg>
       <div class="ringtxt"><span id="vizTime">2:00</span><small id="vizHint">Ready when you are</small></div>
     </div>
+    <div class="nowplaying" id="ytWrap" hidden><div id="ytPlayer"></div></div>
+    </div>
     <p class="vizgoal" id="vizGoal"></p>
     <p class="vizfruit" id="vizFruit" aria-live="polite"></p>
-    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? The music fades out when your 2 minutes are done.</p>
+    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? The music fades out when your 2 minutes are done. If it does not start, tap play on the album card.</p>
     </div>
     <div class="row vizrow"><button type="button" class="primary" id="vizStart">I'm ready, start 2 minutes</button><button type="button" id="vizSound" aria-pressed="true">Music: on</button></div>
     <p class="err" id="vizErr" role="alert"></p>
@@ -823,8 +830,50 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     } else { el.pause(); }
   }
   function musicLabel(){ return musicOn ? 'Music: on' : 'Music: off'; }
-  function startMusic(){ mp3Start(); }
-  function stopMusic(){ mp3Stop(); }
+  var YT_ID = 'LhtUc5CbeiQ', ytPlayer = null, ytReady = false, ytFailed = false, ytLoading = false, ytFade = 0, YT_LEVEL = 70;
+  function loadYT(){
+    if (ytLoading || ytFailed) return;
+    ytLoading = true; $('ytWrap').hidden = false;
+    window.onYouTubeIframeAPIReady = function(){
+      if (ytFailed) return;
+      try {
+        ytPlayer = new YT.Player('ytPlayer', {
+          host: 'https://www.youtube-nocookie.com', videoId: YT_ID, width: '200', height: '200',
+          playerVars: { playsinline: 1, rel: 0, controls: 1, loop: 1, playlist: YT_ID },
+          events: {
+            onReady: function(){ if (ytFailed) return; ytReady = true; if (vizState === 'running' && musicOn) ytPlay(); },
+            onError: function(){ ytFail(); },
+            onStateChange: function(e){ if (e.data === 0 && vizState === 'running' && musicOn) { try { ytPlayer.seekTo(0, true); ytPlayer.playVideo(); } catch(err){} } }
+          }
+        });
+      } catch(e){ ytFail(); }
+    };
+    var sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.async = true; sc.onerror = ytFail;
+    document.head.appendChild(sc);
+    setTimeout(function(){ if (!ytReady) ytFail(); }, 9000);
+  }
+  function ytFail(){
+    if (ytReady || ytFailed) return;
+    ytFailed = true; $('ytWrap').hidden = true;
+    if (vizState === 'running' && musicOn) mp3Start();
+  }
+  function ytPlay(){
+    try {
+      clearInterval(ytFade); var v = 0; ytPlayer.setVolume(0); ytPlayer.playVideo();
+      ytFade = setInterval(function(){ v = Math.min(YT_LEVEL, v + 4); try { ytPlayer.setVolume(v); } catch(e){} if (v >= YT_LEVEL) clearInterval(ytFade); }, 150);
+    } catch(e){}
+  }
+  function ytStop(){
+    try {
+      clearInterval(ytFade); var v = ytPlayer.getVolume ? ytPlayer.getVolume() : YT_LEVEL;
+      ytFade = setInterval(function(){
+        v = Math.max(0, v - 6); try { ytPlayer.setVolume(v); } catch(e){}
+        if (v <= 0) { clearInterval(ytFade); if (!(vizState === 'running' && musicOn)) { try { ytPlayer.pauseVideo(); } catch(e){} } }
+      }, 120);
+    } catch(e){}
+  }
+  function startMusic(){ if (ytReady) ytPlay(); else if (ytFailed) mp3Start(); }
+  function stopMusic(){ if (ytReady) ytStop(); mp3Stop(); }
 
   var vizModal = $('vizModal'), vizState = 'idle', vizElapsed = 0, vizStartAt = 0, vizTimer = 0, vizFruitIdx = -1, wakeLock = null, musicOn = true, lastFocusViz = null, vizDone = false;
   var VIZ_SECONDS = 120, ARC = 326.73;
@@ -853,6 +902,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     $('vizSound').hidden = false; $('vizErr').textContent = '';
     $('vizSound').textContent = musicLabel(); $('vizSound').setAttribute('aria-pressed', musicOn ? 'true' : 'false');
     if (audioEl) { try { audioEl.pause(); audioEl.currentTime = 0; } catch(e){} }
+    if (ytReady) { try { clearInterval(ytFade); ytPlayer.pauseVideo(); ytPlayer.seekTo(0, true); } catch(e){} }
     lastFocusViz = document.activeElement; vizModal.hidden = false; $('vizStart').focus();
   }
   function closeViz(){
@@ -915,7 +965,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   }
   $('vizStart').addEventListener('click', function(){
     if (vizState === 'idle' || vizState === 'paused') {
-      if (vizState === 'idle') { $('vizPrep').hidden = true; $('vizMain').hidden = false; $('vizTitle').textContent = 'Close your eyes and feel it as real'; }
+      if (vizState === 'idle') { $('vizPrep').hidden = true; $('vizMain').hidden = false; $('vizTitle').textContent = 'Close your eyes and feel it as real'; loadYT(); }
       audioCtx();
       if (musicOn) startMusic();
       vizStartAt = performance.now(); vizState = 'running'; this.textContent = 'Pause';
