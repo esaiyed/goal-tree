@@ -14,7 +14,7 @@ A public website with the 3D goal tree. Anyone can create a free account with th
 | `supabase/update-checkins.sql` | Adds daily check-ins to a project set up before check-ins existed (run once) |
 | `netlify.toml` | Hosting settings for Netlify |
 | `vendor/` | The 3D and sign-in libraries, bundled so the site doesn't depend on outside servers |
-| `music/` | The visualization track (trimmed to 2.5 minutes, 128 kbps) |
+| `music/` | The visualization track, edited so its peak lands at 2:00 |
 
 Until `config.js` has real keys, the site runs in **demo mode**: the tree works, but there's no sign-in and changes only save on that device.
 
@@ -80,11 +80,11 @@ Open a chat with Claude (with GitHub connected) and describe the change, for exa
 
 ## Music
 
-The 2-minute visualization plays "Only One Of Us Will Make It" (Andrew Lockington, from the Atlas soundtrack) through YouTube's official embedded player. The player shows as a small 200 by 200 "Now playing" album card next to the timer, because YouTube requires it to stay visible. It loads when someone presses "I'm ready", fades in, and fades out when the 2 minutes are done.
+The 2-minute visualization plays "Emotional Piano and Strings" by Vivaleum, from Pixabay (Pixabay Content License), as audio only.
 
-If YouTube cannot load within 9 seconds, the timer plays "Deep Meditation" by AtlasAudio from Pixabay instead (`music/deep-meditation.mp3`, Pixabay Content License). People can turn music on or off with the Music button, and their choice is remembered on their device.
+The track was edited so its biggest moment lands exactly at the 2-minute mark: one 8-bar phrase of the quiet piano intro is repeated (cut on the beat, where the harmony matches) and the first 2 bars are trimmed, which moves the end of the full strings section from 1:46.7 to 2:00.0 without changing speed or pitch. The site keeps the music locked to the timer (it re-syncs if they drift apart, for example after a pause), so the peak always lines up with the end of the countdown. The file is `music/emotional-piano-strings.mp3` (126 seconds, 128 kbps).
 
-To use a different YouTube song, change `YT_ID` in `index.html` to the new video's ID, or ask Claude to do it. Don't hide or shrink the player below 200 by 200: YouTube's terms don't allow it.
+People can turn music on or off with the Music button, and their choice is remembered on their device. To change the music, ask Claude: a new track needs the same kind of edit to line its peak up with 2:00.
 
 ## Privacy
 

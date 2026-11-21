@@ -56,7 +56,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);overflow:hid
   .chip,#leaders{display:none}
   .fcloud{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
   .fcloud i{font-style:normal;font-size:12px;font-weight:600;color:#ffe9b8;background:rgba(40,30,8,.9);border:1px solid rgba(245,185,66,.5);border-radius:8px;padding:2px 7px}
-  .lbl.fruitlbl .txt{max-width:300px}
+  .lbl.fruitlbl .txt{max-width:none;width:calc(100vw - 32px);box-sizing:border-box}
+  .lbl.fruitlbl .in{transform:none}
+  .lbl.fruitlbl .dot{display:none}
+  .lbl.trunk .txt span,.lbl.roots .txt span{display:none}
+  .lbl.trunk .txt,.lbl.roots .txt{padding:6px 10px}
+  .lbl b{font-size:13px}
+  #dock #phaseText{display:none}
+  body.mine #doubtBtn,body.mine #snapBtn{display:none}
+  body #dock{padding:12px;gap:10px}
   .lbl.fruitlbl .txt > span{display:none}
   .fcloud{margin-top:6px}
 }
@@ -214,9 +222,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
 .vizrow{justify-content:center}
 .vizmain{display:grid;justify-items:center;gap:12px;width:100%}
 .vizrow2{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;align-items:center}
-.nowplaying{width:200px;height:200px;flex:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#000}
-.nowplaying[hidden]{display:none}
-.nowplaying iframe{width:100%;height:100%;border:0;display:block}
+
 .vizmain[hidden],.prep[hidden]{display:none}
 .prep{margin:4px 0;padding:0;list-style:none;counter-reset:pp;display:grid;gap:12px;width:100%;text-align:left}
 .prep li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;font-size:15px;line-height:1.5;color:var(--text)}
@@ -425,11 +431,10 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
       <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="rtrack"></circle><circle cx="60" cy="60" r="52" class="rarc" id="vizArc"></circle></svg>
       <div class="ringtxt"><span id="vizTime">2:00</span><small id="vizHint">Ready when you are</small></div>
     </div>
-    <div class="nowplaying" id="ytWrap" hidden><div id="ytPlayer"></div></div>
     </div>
     <p class="vizgoal" id="vizGoal"></p>
     <p class="vizfruit" id="vizFruit" aria-live="polite"></p>
-    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? The music fades out when your 2 minutes are done. If it does not start, tap play on the album card.</p>
+    <p class="note vizprompt" id="vizPrompt">Picture each fruit as already real. What do you see, hear and feel? The music slowly builds and reaches its peak right as your 2 minutes end.</p>
     </div>
     <div class="row vizrow"><button type="button" class="primary" id="vizStart">I'm ready, start 2 minutes</button><button type="button" id="vizSound" aria-pressed="true">Music: on</button></div>
     <p class="err" id="vizErr" role="alert"></p>
@@ -765,6 +770,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     else if (myStat.done) { checkBtn.textContent = 'Do it again'; checkBtn.disabled = false; }
     else { checkBtn.textContent = "Start today's visualization"; checkBtn.disabled = false; }
     $('calBtn').hidden = !(signedIn && hasSaved);
+    document.body.classList.toggle('mine', mine);
     var tc = $('todayCount');
     tc.hidden = !mine || !hasSaved || !myStat.today;
     tc.textContent = myStat.today === 1 ? '1 time today' : myStat.today + ' times today';
@@ -798,11 +804,11 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     return actx;
   }
   var TRACKS = [
-    { name: 'Deep meditation', src: 'music/deep-meditation.mp3' }
+    { name: 'Emotional piano and strings', src: 'music/emotional-piano-strings.mp3' }
   ];
-  var trackIdx = 0, audioEl = null, audioSrcNode = null, musicGain = null, MUSIC_LEVEL = 0.75;
+  var trackIdx = 0, audioEl = null, audioSrcNode = null, musicGain = null, MUSIC_LEVEL = 0.6;
   function ensureAudio(){
-    if (!audioEl) { audioEl = new Audio(); audioEl.loop = true; audioEl.preload = 'none'; audioEl.setAttribute('playsinline', ''); }
+    if (!audioEl) { audioEl = new Audio(); audioEl.loop = false; audioEl.preload = 'auto'; audioEl.setAttribute('playsinline', ''); }
     var ac = audioCtx();
     if (ac && !audioSrcNode) {
       try { audioSrcNode = ac.createMediaElementSource(audioEl); musicGain = ac.createGain(); musicGain.gain.value = 0; audioSrcNode.connect(musicGain); musicGain.connect(ac.destination); }
@@ -821,59 +827,17 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
       var t = actx.currentTime; musicGain.gain.cancelScheduledValues(t); musicGain.gain.setValueAtTime(musicGain.gain.value, t); musicGain.gain.linearRampToValueAtTime(MUSIC_LEVEL, t + 3);
     } else { audioEl.volume = MUSIC_LEVEL; }
   }
-  function mp3Stop(){
+  function mp3Stop(fadeSec){
     if (!audioEl) return;
-    var el = audioEl;
+    var el = audioEl, fd = fadeSec == null ? 1.5 : fadeSec;
     if (musicGain && actx) {
-      var t = actx.currentTime; musicGain.gain.cancelScheduledValues(t); musicGain.gain.setValueAtTime(musicGain.gain.value, t); musicGain.gain.linearRampToValueAtTime(0, t + 1.5);
-      setTimeout(function(){ if (!(vizState === 'running' && musicOn)) el.pause(); }, 1600);
+      var t = actx.currentTime; musicGain.gain.cancelScheduledValues(t); musicGain.gain.setValueAtTime(musicGain.gain.value, t); musicGain.gain.linearRampToValueAtTime(0, t + fd);
+      setTimeout(function(){ if (!(vizState === 'running' && musicOn)) el.pause(); }, fd*1000 + 80);
     } else { el.pause(); }
   }
   function musicLabel(){ return musicOn ? 'Music: on' : 'Music: off'; }
-  var YT_ID = 'LhtUc5CbeiQ', ytPlayer = null, ytReady = false, ytFailed = false, ytLoading = false, ytFade = 0, YT_LEVEL = 70;
-  function loadYT(){
-    if (ytLoading || ytFailed) return;
-    ytLoading = true; $('ytWrap').hidden = false;
-    window.onYouTubeIframeAPIReady = function(){
-      if (ytFailed) return;
-      try {
-        ytPlayer = new YT.Player('ytPlayer', {
-          host: 'https://www.youtube-nocookie.com', videoId: YT_ID, width: '200', height: '200',
-          playerVars: { playsinline: 1, rel: 0, controls: 1, loop: 1, playlist: YT_ID },
-          events: {
-            onReady: function(){ if (ytFailed) return; ytReady = true; if (vizState === 'running' && musicOn) ytPlay(); },
-            onError: function(){ ytFail(); },
-            onStateChange: function(e){ if (e.data === 0 && vizState === 'running' && musicOn) { try { ytPlayer.seekTo(0, true); ytPlayer.playVideo(); } catch(err){} } }
-          }
-        });
-      } catch(e){ ytFail(); }
-    };
-    var sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.async = true; sc.onerror = ytFail;
-    document.head.appendChild(sc);
-    setTimeout(function(){ if (!ytReady) ytFail(); }, 9000);
-  }
-  function ytFail(){
-    if (ytReady || ytFailed) return;
-    ytFailed = true; $('ytWrap').hidden = true;
-    if (vizState === 'running' && musicOn) mp3Start();
-  }
-  function ytPlay(){
-    try {
-      clearInterval(ytFade); var v = 0; ytPlayer.setVolume(0); ytPlayer.playVideo();
-      ytFade = setInterval(function(){ v = Math.min(YT_LEVEL, v + 4); try { ytPlayer.setVolume(v); } catch(e){} if (v >= YT_LEVEL) clearInterval(ytFade); }, 150);
-    } catch(e){}
-  }
-  function ytStop(){
-    try {
-      clearInterval(ytFade); var v = ytPlayer.getVolume ? ytPlayer.getVolume() : YT_LEVEL;
-      ytFade = setInterval(function(){
-        v = Math.max(0, v - 6); try { ytPlayer.setVolume(v); } catch(e){}
-        if (v <= 0) { clearInterval(ytFade); if (!(vizState === 'running' && musicOn)) { try { ytPlayer.pauseVideo(); } catch(e){} } }
-      }, 120);
-    } catch(e){}
-  }
-  function startMusic(){ if (ytReady) ytPlay(); else if (ytFailed) mp3Start(); }
-  function stopMusic(){ if (ytReady) ytStop(); mp3Stop(); }
+  function startMusic(){ mp3Start(); }
+  function stopMusic(fadeSec){ mp3Stop(fadeSec); }
 
   var vizModal = $('vizModal'), vizState = 'idle', vizElapsed = 0, vizStartAt = 0, vizTimer = 0, vizFruitIdx = -1, wakeLock = null, musicOn = true, lastFocusViz = null, vizDone = false;
   var VIZ_SECONDS = 120, ARC = 326.73;
@@ -901,8 +865,8 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     $('vizStart').textContent = "I'm ready, start 2 minutes"; $('vizStart').disabled = false;
     $('vizSound').hidden = false; $('vizErr').textContent = '';
     $('vizSound').textContent = musicLabel(); $('vizSound').setAttribute('aria-pressed', musicOn ? 'true' : 'false');
-    if (audioEl) { try { audioEl.pause(); audioEl.currentTime = 0; } catch(e){} }
-    if (ytReady) { try { clearInterval(ytFade); ytPlayer.pauseVideo(); ytPlayer.seekTo(0, true); } catch(e){} }
+    setTrack(trackIdx);
+    try { audioEl.pause(); audioEl.currentTime = 0; } catch(e){}
     lastFocusViz = document.activeElement; vizModal.hidden = false; $('vizStart').focus();
   }
   function closeViz(){
@@ -916,6 +880,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     var el = vizElapsed + (performance.now() - vizStartAt) / 1000, left = VIZ_SECONDS - el;
     $('vizTime').textContent = fmt(left);
     $('vizArc').style.strokeDashoffset = (ARC * Math.min(1, el / VIZ_SECONDS)).toFixed(2);
+    if (musicOn && audioEl && !audioEl.paused && el < VIZ_SECONDS && Math.abs(audioEl.currentTime - el) > 0.35) { try { audioEl.currentTime = el; } catch(e){} }
     var fi = Math.min(5, Math.floor(el / (VIZ_SECONDS / 6)));
     if (fi !== vizFruitIdx) showFruit(fi);
     if (left <= 0) vizFinish();
@@ -965,7 +930,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   }
   $('vizStart').addEventListener('click', function(){
     if (vizState === 'idle' || vizState === 'paused') {
-      if (vizState === 'idle') { $('vizPrep').hidden = true; $('vizMain').hidden = false; $('vizTitle').textContent = 'Close your eyes and feel it as real'; loadYT(); }
+      if (vizState === 'idle') { $('vizPrep').hidden = true; $('vizMain').hidden = false; $('vizTitle').textContent = 'Close your eyes and feel it as real'; if (audioEl) { try { audioEl.currentTime = 0; } catch(e){} } }
       audioCtx();
       if (musicOn) startMusic();
       vizStartAt = performance.now(); vizState = 'running'; this.textContent = 'Pause';
@@ -973,7 +938,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     } else if (vizState === 'running') {
       vizElapsed += (performance.now() - vizStartAt) / 1000; vizState = 'paused';
       this.textContent = 'Resume'; $('vizHint').textContent = 'Paused';
-      clearInterval(vizTimer); stopMusic(); releaseWake();
+      clearInterval(vizTimer); stopMusic(0.25); releaseWake();
     } else if (vizState === 'done') { closeViz(); }
   });
   try { var savedMusic = localStorage.getItem('goal-tree-music'); if (savedMusic === 'off') musicOn = false; } catch(e){}
@@ -1440,14 +1405,62 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     return true;
   }
 
+  var fitPts = [];
+  for (var fpi = 0; fpi < 16; fpi++) { var fan = fpi/16*Math.PI*2; fitPts.push(new V3(Math.cos(fan)*R, -D, Math.sin(fan)*R), new V3(Math.cos(fan)*R, 0, Math.sin(fan)*R)); }
+  fitPts.push(new V3(cc.x, canopyTop + 0.4, cc.z), new V3(cc.x + canopyR, cc.y, cc.z), new V3(cc.x - canopyR, cc.y, cc.z), new V3(cc.x, cc.y, cc.z + canopyR), new V3(cc.x, cc.y, cc.z - canopyR));
+  var viewOff = { x: 0, y: 0 }, fitDist = 0, lastFreeKey = '', lastLayoutCheck = 0;
+  function freeArea(){
+    var w = stage.clientWidth || window.innerWidth, h = stage.clientHeight || window.innerHeight;
+    var top = 70;
+    if (w < 860) top = Math.max(top, $('heroTitle').getBoundingClientRect().bottom + 10);
+    if (w < 600) top = Math.max(top, lblFruit.getBoundingClientRect().bottom + 12);
+    var bottom = Math.min(h - 8, $('dock').getBoundingClientRect().top - 10);
+    var right = w - 8, pEl = $('panel');
+    if (pEl.getClientRects().length) { var pb = pEl.getBoundingClientRect(); if (pb.left > w*0.5) right = pb.left - 12; }
+    return { left: 8, top: top, right: right, bottom: Math.max(top + 120, bottom), w: w, h: h };
+  }
+  function contentBounds(f){
+    camera.updateMatrixWorld();
+    var b = { x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9 };
+    fitPts.forEach(function(pt){
+      pv.copy(pt).project(camera);
+      var sx = (pv.x*0.5 + 0.5)*f.w, sy = (-pv.y*0.5 + 0.5)*f.h;
+      if (sx < b.x0) b.x0 = sx; if (sx > b.x1) b.x1 = sx; if (sy < b.y0) b.y0 = sy; if (sy > b.y1) b.y1 = sy;
+    });
+    return b;
+  }
+  function applyOffset(f){ camera.aspect = f.w/f.h; camera.setViewOffset(f.w, f.h, viewOff.x, viewOff.y, f.w, f.h); camera.updateProjectionMatrix(); }
+  function layoutView(refit){
+    var f = freeArea();
+    var key = [f.w, f.h, Math.round(f.top), Math.round(f.bottom), Math.round(f.right)].join(',');
+    if (!refit && key === lastFreeKey) return;
+    lastFreeKey = key;
+    var cx = (f.left + f.right)/2, cy = (f.top + f.bottom)/2;
+    viewOff.x = f.w/2 - cx; viewOff.y = f.h/2 - cy; applyOffset(f);
+    if (refit) {
+      var dir = camera.position.clone().sub(controls.target), dist = dir.length(); dir.normalize();
+      var zoomRatio = fitDist ? dist / fitDist : 1;
+      for (var it = 0; it < 3; it++) {
+        var bb = contentBounds(f);
+        var need = Math.max((bb.y1 - bb.y0) / ((f.bottom - f.top)*0.9), (bb.x1 - bb.x0) / ((f.right - f.left)*0.9));
+        dist = dist * need;
+        camera.position.copy(controls.target).addScaledVector(dir, dist);
+      }
+      fitDist = dist;
+      controls.minDistance = fitDist; controls.maxDistance = fitDist*2.2;
+      camera.position.copy(controls.target).addScaledVector(dir, clamp(fitDist*zoomRatio, controls.minDistance, controls.maxDistance));
+    }
+    var b2 = contentBounds(f);
+    viewOff.x += ((b2.x0 + b2.x1)/2 - cx); viewOff.y += ((b2.y0 + b2.y1)/2 - cy);
+    applyOffset(f);
+  }
   function resize(){
     var w = stage.clientWidth || window.innerWidth, hgt = stage.clientHeight || window.innerHeight;
-    renderer.setSize(w, hgt, false); camera.aspect = w/hgt;
-    camera.setViewOffset(w, hgt, 0, Math.round(hgt*0.06), w, hgt);
-    camera.updateProjectionMatrix();
+    renderer.setSize(w, hgt, false);
+    layoutView(true);
   }
   resize();
-  if (camera.aspect < 0.85) camera.position.multiplyScalar(1.45);
+  setTimeout(function(){ layoutView(true); }, 600);
   window.addEventListener('resize', resize);
 
   var SPEED = 30/26;
@@ -1509,6 +1522,8 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
       if (sk >= 1){ snapT = -1; snapRing.material.opacity = 0; }
     }
 
+    if (performance.now() - lastLayoutCheck > 500) { lastLayoutCheck = performance.now(); layoutView(false); }
+    var camD = camera.position.distanceTo(controls.target); scene.fog.near = camD + 4; scene.fog.far = camD + 26;
     controls.update();
     renderer.render(scene, camera);
 
@@ -1527,7 +1542,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     cen.set(cc.x*gx, cc.y*grow, cc.z*gx);
     camRight.setFromMatrixColumn(camera.matrixWorld, 0);
     place(lblFruit, wv.set(cc.x*gx, (canopyTop + 0.15)*grow, cc.z*gx));
-    if (W < 600) { var fh = lblFruit.firstChild.offsetHeight, tb = $('heroTitle').getBoundingClientRect().bottom + 10, fyS = toScreen(wv, W, Hh); if (fyS.y - fh < tb) lblFruit.style.transform = 'translate(' + fyS.x.toFixed(1) + 'px,' + (tb + fh).toFixed(1) + 'px)'; }
+    if (W < 600) { lblFruit.style.visibility = ''; lblFruit.style.transform = 'translate(16px,' + ($('heroTitle').getBoundingClientRect().bottom + 8).toFixed(1) + 'px)'; }
     place(lblTrunk, wv.set(0.3*gx, 1.35*grow, 0));
     var rA = toScreen(wv.set(0, -0.35, 0).addScaledVector(camRight, -3.6), W, Hh), rw = lblRoots.offsetWidth || 200;
     if (rA.x - rw < 8) {
