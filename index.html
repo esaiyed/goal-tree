@@ -23,6 +23,7 @@
   --gold:#f5b942;
   --mint:#5ee6a8;
   --red:#ff5a5f;
+  --dormant:#7d6e62;
   --bark:#d9a066;
   --display:"Sora","Segoe UI",system-ui,sans-serif;
   --body:"Manrope","Segoe UI",system-ui,sans-serif;
@@ -376,7 +377,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
       <p class="grp">Then every day</p>
       <ol>
         <li>Start the 2-minute visualization, close your eyes and feel each fruit as real</li>
-        <li>Check in: your tree grows a day and a red root turns green. Repeat it as often as you like.</li>
+        <li>Check in: your tree grows a day and a gray root lights up green. Repeat it as often as you like.</li>
         <li>When doubt hits, snap the band and picture one fruit again</li>
       </ol>
       <p class="note">Miss a day and your tree starts to dim until you check in again.</p>
@@ -406,7 +407,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   </section>
   <section class="meters" id="secMeters" aria-label="What is happening inside">
     <h2>Inside your mind today</h2>
-    <div class="meter"><span>Old negative evidence</span><span class="val" id="mRed">94%</span><div class="bar"><i id="bRed" style="background:var(--red)"></i></div></div>
+    <div class="meter"><span>Old evidence</span><span class="val" id="mRed">94%</span><div class="bar"><i id="bRed" style="background:var(--dormant)"></i></div></div>
     <div class="meter"><span>New evidence from visualizing</span><span class="val" id="mMint">6%</span><div class="bar"><i id="bMint" style="background:var(--mint)"></i></div></div>
     <div class="meter"><span>Fruit ripeness</span><span class="val" id="mRipe">0%</span><div class="bar"><i id="bRipe" style="background:var(--gold)"></i></div></div>
     <div class="meter"><span>Willpower needed</span><span class="val" id="mWill">100%</span><div class="bar"><i id="bWill" style="background:#8f9ac0"></i></div></div>
@@ -416,7 +417,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
 <div id="dock">
   <div class="phase" aria-live="polite">
     <span id="dayBadge">Day 1</span>
-    <div><strong id="phaseTitle">Write your stresses, flip them into fruits</strong><span id="phaseText">The roots are full of red: years of negative evidence. A big money goal gets rejected, so pick fruits and a goal you can believe.</span></div>
+    <div><strong id="phaseTitle">Write your stresses, flip them into fruits</strong><span id="phaseText">The roots hold years of old evidence. A big money goal gets rejected, so pick fruits and a goal you can believe.</span></div>
   </div>
   <div class="strip" id="strip" hidden></div>
   <div class="controls">
@@ -505,7 +506,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     <h3>Then every day</h3>
     <ul class="wdaily">
       <li>Press <b>Start today's visualization</b>, close your eyes and feel your fruits as real for 2 minutes.</li>
-      <li>Your first session each day grows your tree one day and turns a red root green. Do it again as many times as you like, and the site counts every session.</li>
+      <li>Your first session each day grows your tree one day and lights up a gray root green. Do it again as many times as you like, and the site counts every session.</li>
       <li>Miss a day and your tree starts to dim, until you come back.</li>
     </ul>
     <div class="row"><button type="button" class="primary" id="wStart">Start free</button><button type="button" id="wLater">Look around first</button></div>
@@ -534,7 +535,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     <ul class="wdaily">
       <li><b>Your own tree.</b> Write your power goal and fruits once. They are saved to your private 3D tree.</li>
       <li><b>2 minutes a day, guided.</b> Press start and close your eyes. Your fruits appear one at a time while the music builds to its peak at the 2-minute mark.</li>
-      <li><b>Watch your roots change.</b> Each day you do it turns a red root green and grows your tree. Skip days and it starts to dim.</li>
+      <li><b>Watch your roots change.</b> Each day you do it lights up a gray root green and grows your tree. Skip days and it starts to dim.</li>
       <li><b>As often as you need.</b> Do extra sessions whenever doubt hits. The calendar counts every one.</li>
     </ul>
     <div class="row"><button type="button" class="primary" id="whatStart">Start free</button><button type="button" id="whatLater">Close</button></div>
@@ -622,7 +623,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
 
   var stage = $('stage');
   var PH = [
-    { max: 3,  title: "Write your stresses, flip them into fruits", text: "The roots are full of red: years of negative evidence. A big money goal gets rejected, so pick fruits and a goal you can believe.", steps: [0,1,2] },
+    { max: 3,  title: "Write your stresses, flip them into fruits", text: "The roots hold years of old evidence. A big money goal gets rejected, so pick fruits and a goal you can believe.", steps: [0,1,2] },
     { max: 10, title: "Picture the fruits every day", text: "2 to 5 minutes, headphones on, eyes closed. Feel the fruits as already real. Each session drops new evidence into the roots.", steps: [3,4] },
     { max: 20, title: "Hope, then prompts", text: "The pull back gets weaker. Small ideas start to show up: follow up with that person, film that video. Act on them right away.", steps: [3,4] },
     { max: 99, title: "Certainty", text: "The fruits start to feel normal. Belief carries the action now, not willpower. Keep visualizing and keep acting.", steps: [3,4] }
@@ -731,7 +732,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   lblFruit.addEventListener('click', function(){ if (isM()) setPage(1); });
   lblFruit.innerHTML = '<div class="in"><i class="dot"></i><div class="txt"><b>Fruits: your stresses, solved</b><span>This is what you picture and feel</span><span class="fmore">See your fruits &rsaquo;</span><div class="fcloud"></div></div></div>';
   lblTrunk.innerHTML = '<div class="in"><i class="dot"></i><div class="txt"><b>Trunk: your power goal</b><span class="goalTxt"></span></div></div>';
-  lblRoots.innerHTML = '<div class="in"><i class="dot"></i><div class="txt"><b>Roots: your subconscious</b><span>Stores everything as emotion</span><span class="keys"><span class="key"><i style="background:var(--red)"></i>old negative evidence</span><span class="key"><i style="background:var(--mint)"></i>new evidence</span></span></div></div>';
+  lblRoots.innerHTML = '<div class="in"><i class="dot"></i><div class="txt"><b>Roots: your subconscious</b><span>Stores everything as emotion</span><span class="keys"><span class="key"><i style="background:var(--dormant)"></i>old evidence</span><span class="key"><i style="background:var(--mint)"></i>new evidence</span></span></div></div>';
   var SVGNS = 'http://www.w3.org/2000/svg';
   var leaders = document.createElementNS(SVGNS, 'svg'); leaders.id = 'leaders'; labelsEl.insertBefore(leaders, labelsEl.firstChild);
   var chips = [], lines = [], chipState = [];
@@ -1011,7 +1012,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     if (!hasSaved) return { key: 'm-setup', title: 'Make this tree yours', text: 'Replace the example goal and fruits with your own and press Save. Then your daily 2-minute visualization unlocks.', steps: [0,1,2] };
     if (st.done) return { key: 'm-done-' + n + '-' + st.streak + '-' + st.today, title: 'Day ' + n + ' done. Your tree grew.', text: (st.today > 1 ? 'You did your visualization ' + st.today + ' times today. ' : '') + (n >= 30 ? 'You finished all 30 days. Keep going to keep your tree full and green. ' : '') + (st.streak > 1 ? st.streak + '-day streak. ' : '') + 'Do it again any time, or come back tomorrow for day ' + (n + 1) + '.', steps: [3] };
     if (st.missed > 0) return { key: 'm-miss-' + st.missed, title: 'You missed ' + st.missed + (st.missed === 1 ? ' day' : ' days') + '. Your tree is dimming.', text: "Do today's 2 minutes to bring it back. Your progress is safe, and every check-in counts.", steps: [3,4] };
-    return { key: 'm-ready-' + n + '-' + st.streak, title: n === 0 ? 'Ready for day 1' : 'Ready for day ' + (n + 1), text: 'Close your eyes for 2 minutes and feel your fruits as real. When you finish, your tree grows a day and a red root turns green.' + (st.streak > 0 ? ' ' + st.streak + '-day streak so far.' : ''), steps: [3,4] };
+    return { key: 'm-ready-' + n + '-' + st.streak, title: n === 0 ? 'Ready for day 1' : 'Ready for day ' + (n + 1), text: 'Close your eyes for 2 minutes and feel your fruits as real. When you finish, your tree grows a day and a gray root lights up green.' + (st.streak > 0 ? ' ' + st.streak + '-day streak so far.' : ''), steps: [3,4] };
   }
   function startToday(){
     if (sb && !currentUser) { openAuth('up', 'Create a free account to build your own goal tree.'); return; }
@@ -1517,7 +1518,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     }
   }
 
-  var RED = L(0xff5a5f), MINT = L(0x5ee6a8);
+  var DORMANT = L(0x6f6157), MINT = L(0x5ee6a8);
   var orbGeo = new THREE.SphereGeometry(0.085, 14, 12), haloGeo = new THREE.SphereGeometry(0.2, 12, 10);
   var orbs = [], NO = 64, order = [];
   for (var k=0;k<NO;k++) order.push(k);
@@ -1529,8 +1530,8 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     p.y = Math.min(-0.2, p.y + (rand()-0.5)*0.4);
     var rr = Math.hypot(p.x, p.z); if (rr > R-0.25){ p.x *= (R-0.25)/rr; p.z *= (R-0.25)/rr; }
     p.y = Math.max(p.y, -D+0.15);
-    var m = new THREE.Mesh(orbGeo, new THREE.MeshBasicMaterial({ color: RED.clone(), toneMapped: false })); m.position.copy(p);
-    var h = new THREE.Mesh(haloGeo, new THREE.MeshBasicMaterial({ color: RED.clone(), transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })); h.position.copy(p);
+    var m = new THREE.Mesh(orbGeo, new THREE.MeshBasicMaterial({ color: DORMANT.clone(), toneMapped: false })); m.position.copy(p);
+    var h = new THREE.Mesh(haloGeo, new THREE.MeshBasicMaterial({ color: DORMANT.clone(), transparent: true, opacity: 0.03, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })); h.position.copy(p);
     scene.add(m); scene.add(h);
     orbs.push({ m: m, h: h, th: (order[o]+0.5)/NO, mix: 0, pop: 0, ph: Math.random()*6.28 });
   }
@@ -1768,9 +1769,9 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
       ob.mix = lerp(ob.mix, target, 1 - Math.pow(0.002, dt));
       if (target === 1 && prev < 0.5 && ob.mix >= 0.5) ob.pop = 1;
       ob.pop = Math.max(0, ob.pop - dt*2.2);
-      ob.m.material.color.copy(RED).lerp(MINT, ob.mix); ob.h.material.color.copy(ob.m.material.color);
-      var sc = 1 + ob.pop*1.3 + Math.sin(t*2 + ob.ph)*0.07;
-      ob.m.scale.setScalar(sc); ob.h.scale.setScalar(sc*(1 + ob.pop)); ob.h.material.opacity = 0.18 + ob.pop*0.45;
+      ob.m.material.color.copy(DORMANT).lerp(MINT, ob.mix); ob.h.material.color.copy(ob.m.material.color);
+      var sc = (0.7 + 0.35*ob.mix) * (1 + ob.pop*1.3 + Math.sin(t*2 + ob.ph)*0.07*ob.mix);
+      ob.m.scale.setScalar(sc); ob.h.scale.setScalar(sc*(1 + ob.pop)); ob.h.material.opacity = 0.03 + 0.29*ob.mix + ob.pop*0.45;
       if (ob.mix < 0.5) red++;
     }
 
