@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Reprogram Your Mind</title>
 <meta name="description" content="Build your 30-day goal tree: turn your biggest stresses into fruits, pick a power goal you believe, and watch it grow as you visualize every day.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,21 +52,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);overflow:hid
 .lbl.roots.flip .in{flex-direction:row;transform:translate(-6px,-14px)}
 .lbl.roots.flip .txt{text-align:left;border-right:1px solid var(--line);border-left:3px solid currentColor;border-radius:0 10px 10px 0}
 .fcloud{display:none}
-@media (max-width:600px){
-  .chip,#leaders{display:none}
-  .fcloud{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-  .fcloud i{font-style:normal;font-size:12px;font-weight:600;color:#ffe9b8;background:rgba(40,30,8,.9);border:1px solid rgba(245,185,66,.5);border-radius:8px;padding:2px 7px}
-  .lbl.fruitlbl .txt{max-width:none;width:calc(100vw - 32px);box-sizing:border-box}
-  .lbl.fruitlbl .in{transform:none}
-  .lbl.fruitlbl .dot{display:none}
-  .lbl.trunk .txt span,.lbl.roots .txt span{display:none}
-  .lbl.trunk .txt,.lbl.roots .txt{padding:6px 10px}
-  .lbl b{font-size:13px}
-  #dock #phaseText{display:none}
-  body.mine #doubtBtn,body.mine #snapBtn{display:none}
-  body #dock{padding:12px;gap:10px}
-  .lbl.fruitlbl .txt > span{display:none}
-  .fcloud{margin-top:6px}
 }
 #leaders{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 #leaders line{stroke:#f5b942;stroke-width:1;transition:opacity .25s}
@@ -256,11 +241,92 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   #phaseText{font-size:12px}
   .controls button{padding:7px 10px;font-size:12px}
 }
+#logo{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:4;pointer-events:none;line-height:0}
+#logo img{height:48px;width:auto;display:block}
+.lbl .fmore{display:none}
+.mpage,#mtabs{display:none}
+@media (max-width:1299px){ .acct-label{display:none} }
+@media (min-width:860px) and (max-width:1099px){ #heroTitle{max-width:calc(50vw - 150px)} }
+@media (min-width:860px) and (max-width:1199px){ .title .sub{display:none} }
+
+/* Phones and small tablets: tree page + swipeable "My goal" and "Guide" pages */
+@media (max-width:859px){
+  :root{--tabh:calc(58px + env(safe-area-inset-bottom))}
+  #logo{top:calc(env(safe-area-inset-top) + 12px)}
+  #logo img{height:clamp(30px,5.5vw,44px)}
+  #topbar{top:calc(env(safe-area-inset-top) + 9px);right:10px}
+  #topbar button{padding:6px 11px;font-size:12.5px}
+  #howBtn,#calBtn,#panelToggle,.acct-label{display:none !important}
+  body.signed #acctBtn{display:none}
+  #panel{display:none !important}
+  .title{top:calc(env(safe-area-inset-top) + 50px);left:16px;right:16px;max-width:none;text-align:center}
+  .title .eyebrow,.title .sub,.title .whatbtn{display:none}
+  #heroTitle{font-size:17px;font-weight:600;color:#e9eefc}
+  body:not(.signed) #heroTitle{display:none}
+
+  .chip,#leaders,.fcloud{display:none !important}
+  .lbl .txt{max-width:190px;padding:6px 10px}
+  .lbl b{font-size:13px}
+  .lbl span{font-size:12px;margin-top:2px}
+  .lbl.trunk .txt{max-width:170px}
+  .lbl.roots .txt > span{display:none}
+  .lbl.fruitlbl{pointer-events:auto;cursor:pointer}
+  .lbl.fruitlbl .txt{text-align:center}
+  .lbl.fruitlbl .txt > span:not(.fmore){display:none}
+  .lbl.fruitlbl .fmore{display:block;color:#ffd27a;font-weight:600}
+
+  #dock{left:10px;right:10px;width:auto;transform:none;bottom:calc(var(--tabh) + 8px);padding:12px;gap:9px;border-radius:14px}
+  #dock #phaseText{display:none}
+  #phaseTitle{font-size:14px}
+  #dock #previewBtn{display:none}
+  body.mine #doubtBtn,body.mine #snapBtn{display:none}
+  body.mine .controls{flex-wrap:nowrap}
+  #checkBtn{flex:1 1 auto;min-width:0}
+
+  .mpage{display:block;position:fixed;left:0;top:0;width:100%;bottom:var(--tabh);z-index:12;background:#0a0f22;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 20px) 18px 28px;transform:translateX(100%);transition:transform .32s cubic-bezier(.22,.8,.24,1);will-change:transform}
+  #mGuide{transform:translateX(200%)}
+  #mtabs{display:grid;grid-template-columns:repeat(3,1fr);position:fixed;left:0;right:0;bottom:0;height:var(--tabh);padding-bottom:env(safe-area-inset-bottom);box-sizing:border-box;background:rgba(10,14,32,.97);border-top:1px solid var(--line);z-index:14}
+  #mtabs button{background:none;border:0;border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;font-weight:600;color:var(--muted);padding:6px 0}
+  #mtabs button svg{width:22px;height:22px}
+  #mtabs button[aria-current="page"]{color:var(--gold)}
+
+  .mtitle{font-family:var(--display);font-size:22px;font-weight:600;margin:0 0 4px}
+  .mhint{font-size:13px;color:var(--muted);margin:0 0 16px}
+  .msum{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:16px}
+  .msum[hidden]{display:none}
+  .mlbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:0 0 4px}
+  .msum.ex .mlbl::after{content:" (example)";color:var(--muted);text-transform:none;letter-spacing:0;font-weight:500}
+  .mgoal{font-family:var(--display);font-size:18px;font-weight:600;margin:0 0 14px;line-height:1.35}
+  .mfruits{margin:0;padding-left:20px;display:grid;gap:8px;font-size:15px;line-height:1.45}
+  .mpage section{margin-bottom:18px}
+  .mpage section h2{font-family:var(--display);font-size:16px;font-weight:600;margin:0 0 10px}
+  #mGoal #secGoal > h2{display:none}
+  .mpage .note{font-size:13px}
+  .mpage #editBtn{width:100%;padding:12px;font-size:15px;font-weight:600}
+  .mpage #editForm label{font-size:13px}
+  .mpage #editForm input,.mpage #editForm textarea{padding:10px 12px}
+  .mpage #saveBtn{flex:1 1 100%;padding:12px;font-size:15px}
+  .mwhat{display:grid;gap:3px;width:100%;text-align:left;background:rgba(245,185,66,.1);border:1px solid rgba(245,185,66,.45);border-radius:14px;padding:14px 16px;margin:12px 0 18px}
+  .mwhat b{color:#ffe2a0;font-size:15px}
+  .mwhat span{color:var(--muted);font-size:13px;line-height:1.45}
+  .mpage #steps li{font-size:14.5px;padding:8px 10px}
+  .mrow{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+  .mrow button{flex:1 1 auto;padding:11px 12px;font-size:14px}
+  .mrow button[hidden]{display:none}
+  .mquiet{display:block;margin:6px auto 0;background:none;color:var(--muted)}
+  .mquiet[hidden]{display:none}
+  .mpage .meters{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .mpage .meter{font-size:13px}
+  /* 16px text boxes stop iPhones from zooming in when you tap them */
+  body input,body textarea,body select{font-size:16px !important}
+}
+@media (max-width:859px) and (max-height:600px){ .lbl.trunk .txt > span{display:none} }
 </style>
 </head>
 <body>
 <div id="stage" aria-label="3D tree: fruits are your stresses solved, the trunk is your power goal, the roots are your subconscious mind" role="img"></div>
 <div id="labels" aria-hidden="true"></div>
+<div id="logo"><picture><source srcset="logo.webp" type="image/webp"><img src="logo.png" alt="Reprogram Your Mind" width="644" height="150"></picture></div>
 
 <header class="title">
   <p class="eyebrow" id="eyebrow">Your 30-day goal tree</p>
@@ -278,7 +344,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
 </div>
 
 <aside id="panel">
-  <section>
+  <section id="secSteps">
     <h2>How it works</h2>
     <div id="steps">
       <p class="grp">Set it up once</p>
@@ -296,7 +362,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
       <p class="note">Miss a day and your tree starts to dim until you check in again.</p>
     </div>
   </section>
-  <section>
+  <section id="secGoal">
     <h2>Your fruits and goal</h2>
     <p class="note" id="noteTxt">You are looking at example fruits. Create a free account to put your own goal on the tree.</p>
     <button id="editBtn" type="button" aria-expanded="false" aria-controls="editForm">Make this tree mine</button>
@@ -318,7 +384,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     </form>
     <p class="note" id="saveStatus" role="status"></p>
   </section>
-  <section class="meters" aria-label="What is happening inside">
+  <section class="meters" id="secMeters" aria-label="What is happening inside">
     <h2>Inside your mind today</h2>
     <div class="meter"><span>Old negative evidence</span><span class="val" id="mRed">94%</span><div class="bar"><i id="bRed" style="background:var(--red)"></i></div></div>
     <div class="meter"><span>New evidence from visualizing</span><span class="val" id="mMint">6%</span><div class="bar"><i id="bMint" style="background:var(--mint)"></i></div></div>
@@ -346,6 +412,31 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     <button id="snapBtn" type="button">Snap and reset</button>
   </div>
 </div>
+
+<div id="mGoal" class="mpage" role="region" aria-label="My goal and fruits">
+  <h2 class="mtitle">My goal and fruits</h2>
+  <p class="mhint">Swipe right to go back to your tree.</p>
+  <div class="msum" id="mSum">
+    <p class="mlbl">Power goal</p>
+    <p class="mgoal" id="mGoalTxt"></p>
+    <p class="mlbl">Fruits: your stresses, solved</p>
+    <ol class="mfruits" id="mFruits"></ol>
+  </div>
+  <div data-slot="goal"></div>
+  <button type="button" id="mSignOut" class="mquiet" hidden>Sign out</button>
+</div>
+<div id="mGuide" class="mpage" role="region" aria-label="Guide">
+  <h2 class="mtitle">Guide</h2>
+  <button type="button" class="mwhat" id="mWhat"><b>What is Reprogram Your Mind?</b><span>Why this site exists and the big ideas from Rav Malik's training</span></button>
+  <div data-slot="steps"></div>
+  <div class="mrow"><button type="button" id="mCal" hidden>Open my calendar</button><button type="button" id="mPreview" hidden>Preview 30 days</button><button type="button" id="mTour">Show the welcome tour</button></div>
+  <div data-slot="meters"></div>
+</div>
+<nav id="mtabs" aria-label="Pages">
+  <button type="button" data-p="0" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21v-6"/><path d="M12 15c-3.9 0-7-2.5-7-5.8a7 7 0 0 1 14 0C19 12.5 15.9 15 12 15z"/><path d="M9 21h6"/></svg><span>Tree</span></button>
+  <button type="button" data-p="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg><span>My goal</span></button>
+  <button type="button" data-p="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/><path d="M9 7.5h6M9 11h4"/></svg><span>Guide</span></button>
+</nav>
 
 <div id="authModal" class="modal" hidden>
   <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="authTitle">
@@ -546,11 +637,109 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     this.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
 
+  // ---- Phones: the tree page plus swipeable "My goal" and "Guide" pages ----
+  var mq = window.matchMedia('(max-width: 859px)'), mPage = 0, mMode = null;
+  function isM(){ return mq.matches; }
+  function mPageEls(){ return [null, $('mGoal'), $('mGuide')]; }
+  function renderPages(dx, instant){
+    var els = mPageEls();
+    for (var i = 1; i < 3; i++) {
+      els[i].style.transition = instant ? 'none' : '';
+      els[i].style.transform = 'translateX(calc(' + ((i - mPage) * 100) + '% + ' + (dx || 0).toFixed(1) + 'px))';
+    }
+  }
+  function setPage(p, instant){
+    mPage = Math.max(0, Math.min(2, p));
+    renderPages(0, instant);
+    var els = mPageEls();
+    for (var i = 1; i < 3; i++) {
+      var off = i !== mPage;
+      els[i].toggleAttribute('inert', off); els[i].setAttribute('aria-hidden', off ? 'true' : 'false');
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('#mtabs button'), function(b){
+      if (+b.getAttribute('data-p') === mPage) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+  }
+  function placeSections(){
+    var m = isM();
+    if (m === mMode) return;
+    mMode = m;
+    var panel = $('panel'), secs = { steps: $('secSteps'), goal: $('secGoal'), meters: $('secMeters') };
+    if (m) {
+      Object.keys(secs).forEach(function(k){ document.querySelector('[data-slot="' + k + '"]').appendChild(secs[k]); });
+      document.body.classList.remove('panel-open'); $('panelToggle').setAttribute('aria-expanded', 'false');
+      setPage(mPage, true);
+    } else {
+      panel.appendChild(secs.steps); panel.appendChild(secs.goal); panel.appendChild(secs.meters);
+      mPage = 0;
+      mPageEls().forEach(function(el){ if (el) { el.style.transform = ''; el.removeAttribute('inert'); el.removeAttribute('aria-hidden'); } });
+    }
+  }
+  function updMSum(){
+    $('mGoalTxt').textContent = data.goal;
+    var ol = $('mFruits'); ol.textContent = '';
+    data.fruits.forEach(function(f){ var li = document.createElement('li'); li.textContent = f; ol.appendChild(li); });
+  }
+  function syncMobile(){
+    var signedIn = sb ? !!currentUser : true;
+    document.body.classList.toggle('signed', !!(sb && currentUser));
+    $('mSignOut').hidden = !(sb && currentUser);
+    $('mCal').hidden = !(signedIn && hasSaved);
+    $('mPreview').hidden = !signedIn;
+    $('mPreview').textContent = previewing ? 'Back to my tree' : 'Preview 30 days';
+    $('mSum').classList.toggle('ex', !hasSaved);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('#mtabs button'), function(b){
+    b.addEventListener('click', function(){ setPage(+b.getAttribute('data-p')); });
+  });
+  $('mWhat').addEventListener('click', function(){ openWhat(); });
+  $('mTour').addEventListener('click', function(){ openWelcome(); });
+  $('mCal').addEventListener('click', function(){ openCal(); });
+  $('mPreview').addEventListener('click', function(){ setPage(0); previewBtn.click(); });
+  $('mSignOut').addEventListener('click', function(){ acctBtn.click(); });
+  // swipe between pages (one finger, mostly sideways); two fingers turn and zoom the tree
+  var sw = null;
+  function anyModal(){ return !!document.querySelector('.modal:not([hidden])'); }
+  document.addEventListener('touchstart', function(e){
+    sw = null;
+    if (!isM() || e.touches.length !== 1 || anyModal()) return;
+    var t = e.target;
+    if (t && t.closest && t.closest('input,textarea,select,#track')) return;
+    sw = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now(), lock: '', dx: 0 };
+  }, { passive: true });
+  document.addEventListener('touchmove', function(e){
+    if (!sw) return;
+    if (e.touches.length !== 1) { sw = null; renderPages(0); return; }
+    var dx = e.touches[0].clientX - sw.x, dy = e.touches[0].clientY - sw.y;
+    if (!sw.lock) {
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+      sw.lock = Math.abs(dx) > Math.abs(dy) * 1.2 ? 'h' : 'v';
+    }
+    if (sw.lock !== 'h') return;
+    if (e.cancelable) e.preventDefault();
+    if ((mPage === 0 && dx > 0) || (mPage === 2 && dx < 0)) dx *= 0.25;
+    sw.dx = dx; renderPages(dx, true);
+  }, { passive: false });
+  function swipeEnd(){
+    if (!sw) return;
+    var s = sw; sw = null;
+    if (s.lock !== 'h') return;
+    var v = s.dx / Math.max(1, Date.now() - s.t), W = window.innerWidth, next = mPage;
+    if (s.dx < -W*0.2 || v < -0.45) next = mPage + 1;
+    else if (s.dx > W*0.2 || v > 0.45) next = mPage - 1;
+    setPage(next);
+  }
+  document.addEventListener('touchend', swipeEnd, { passive: true });
+  document.addEventListener('touchcancel', swipeEnd, { passive: true });
+  if (mq.addEventListener) mq.addEventListener('change', placeSections); else if (mq.addListener) mq.addListener(placeSections);
+  placeSections();
+
 
   var labelsEl = $('labels');
   function mkLabel(cls){ var d = document.createElement('div'); d.className = 'lbl ' + cls; labelsEl.appendChild(d); return d; }
   var lblFruit = mkLabel('fruitlbl'), lblTrunk = mkLabel('trunk'), lblRoots = mkLabel('roots');
-  lblFruit.innerHTML = '<div class="in"><i class="dot"></i><div class="txt"><b>Fruits: your stresses, solved</b><span>This is what you picture and feel</span><div class="fcloud"></div></div></div>';
+  lblFruit.addEventListener('click', function(){ if (isM()) setPage(1); });
+  lblFruit.innerHTML = '<div class="in"><i class="dot"></i><div class="txt"><b>Fruits: your stresses, solved</b><span>This is what you picture and feel</span><span class="fmore">See your fruits &rsaquo;</span><div class="fcloud"></div></div></div>';
   lblTrunk.innerHTML = '<div class="in"><i class="dot"></i><div class="txt"><b>Trunk: your power goal</b><span class="goalTxt"></span></div></div>';
   lblRoots.innerHTML = '<div class="in"><i class="dot"></i><div class="txt"><b>Roots: your subconscious</b><span>Stores everything as emotion</span><span class="keys"><span class="key"><i style="background:var(--red)"></i>old negative evidence</span><span class="key"><i style="background:var(--mint)"></i>new evidence</span></span></div></div>';
   var SVGNS = 'http://www.w3.org/2000/svg';
@@ -566,6 +755,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     chips.forEach(function(ch,i){ ch.querySelector('.pill').textContent = data.fruits[i]; });
     var fc = lblFruit.querySelector('.fcloud'); fc.textContent = '';
     data.fruits.forEach(function(f){ var sp = document.createElement('i'); sp.textContent = f; fc.appendChild(sp); });
+    updMSum();
   }
   applyText();
 
@@ -577,10 +767,13 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   }
   function openEditor(){
     form.hidden = false; editBtn.setAttribute('aria-expanded', 'true'); fillForm();
-    if (window.innerWidth <= 860) { document.body.classList.add('panel-open'); $('panelToggle').setAttribute('aria-expanded', 'true'); }
+    $('mSum').hidden = true;
+    if (isM()) { setPage(1); $('mGoal').scrollTop = 0; }
+    else if (window.innerWidth <= 860) { document.body.classList.add('panel-open'); $('panelToggle').setAttribute('aria-expanded', 'true'); }
     $('goalIn').focus();
   }
-  function closeEditor(){ form.hidden = true; editBtn.setAttribute('aria-expanded', 'false'); $('panel').scrollTop = 0; }
+  function closeEditor(){ form.hidden = true; editBtn.setAttribute('aria-expanded', 'false'); $('panel').scrollTop = 0; $('mSum').hidden = false; }
+  function afterSave(){ if (isM()) setTimeout(function(){ setPage(0); }, 900); }
   function setStatus(msg, ok){ saveStatus.textContent = msg || ''; saveStatus.className = 'note' + (msg ? (ok ? ' ok' : ' errtxt') : ''); }
   $('goalIn').addEventListener('input', updCount);
   editBtn.addEventListener('click', function(){
@@ -593,7 +786,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     if (g) data.goal = g;
     for (var i=0;i<6;i++){ var v = $('f'+i).value.replace(/\s+/g, ' ').trim(); if (v) data.fruits[i] = v; }
     applyText();
-    if (!sb) { saveLocal(data); hasSaved = true; closeEditor(); setStatus('Saved on this device.', true); refreshStatus(); renderDock(); return; }
+    if (!sb) { saveLocal(data); hasSaved = true; closeEditor(); setStatus('Saved on this device.', true); refreshStatus(); renderDock(); afterSave(); return; }
     if (!currentUser) { openAuth('up'); return; }
     var btn = $('saveBtn'); btn.disabled = true; setStatus('Saving...', true);
     var res = await sb.from('goal_trees').upsert({ user_id: currentUser.id, goal: data.goal, fruits: data.fruits, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
@@ -605,7 +798,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
       var ur = await sb.auth.updateUser({ data: { first_name: fnv, last_name: lnv } });
       if (!ur.error && ur.data && ur.data.user) { currentUser = ur.data.user; renderAcct(); }
     }
-    closeEditor(); setStatus('Saved to your account.', true); refreshStatus(); renderDock();
+    closeEditor(); setStatus('Saved to your account.', true); refreshStatus(); renderDock(); afterSave();
   });
   $('resetBtn').addEventListener('click', function(){ var ex = copyExamples(); data.goal = ex.goal; data.fruits = ex.fruits; fillForm(); applyText(); setStatus('Examples loaded. Press Save to keep them.', true); });
   var delArmed = false, delTimer = 0;
@@ -810,7 +1003,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     var tc = $('todayCount');
     tc.hidden = !mine || !hasSaved || !myStat.today;
     tc.textContent = myStat.today === 1 ? '1 time today' : myStat.today + ' times today';
-    setPlayLabel();
+    setPlayLabel(); syncMobile();
   }
   function minePhase(){
     var st = myStat, n = st.n;
@@ -1004,7 +1197,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   function openWelcome(){
     lastFocusW = document.activeElement;
     $('wStart').textContent = startLabel();
-    welcome.hidden = false; $('wStart').focus();
+    welcome.hidden = false; welcome.querySelector('.dialog').scrollTop = 0; $('wStart').focus({ preventScroll: true });
   }
   function closeWelcome(){
     welcome.hidden = true;
@@ -1179,6 +1372,11 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   controls.enableDamping = true; controls.dampingFactor = 0.08; controls.enablePan = false;
   controls.minDistance = 6; controls.maxDistance = 26; controls.maxPolarAngle = 1.95;
   controls.autoRotate = !reduce; controls.autoRotateSpeed = 0.45;
+  function syncControls(){
+    controls.touches.ONE = isM() ? -1 : THREE.TOUCH.ROTATE;
+    controls.touches.TWO = isM() ? THREE.TOUCH.DOLLY_ROTATE : THREE.TOUCH.DOLLY_PAN;
+  }
+  syncControls();
 
   scene.add(new THREE.HemisphereLight(0xc3d2ff, 0x3a2a1a, 0.95));
   var sun = new THREE.DirectionalLight(0xfff0d8, 1.45);
@@ -1477,17 +1675,19 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   var fitPts = [];
   for (var fpi = 0; fpi < 16; fpi++) { var fan = fpi/16*Math.PI*2; fitPts.push(new V3(Math.cos(fan)*R, -D, Math.sin(fan)*R), new V3(Math.cos(fan)*R, 0, Math.sin(fan)*R)); }
   fitPts.push(new V3(cc.x, canopyTop + 0.4, cc.z), new V3(cc.x + canopyR, cc.y, cc.z), new V3(cc.x - canopyR, cc.y, cc.z), new V3(cc.x, cc.y, cc.z + canopyR), new V3(cc.x, cc.y, cc.z - canopyR));
-  var viewOff = { x: 0, y: 0 }, fitDist = 0, lastFreeKey = '', lastLayoutCheck = 0;
-  function heroBottom(){
-    var b = $('heroTitle').getBoundingClientRect().bottom, wb = $('whatBtn');
-    if (wb.getClientRects().length) b = Math.max(b, wb.getBoundingClientRect().bottom);
+  var viewOff = { x: 0, y: 0 }, fitDist = 0, lastFreeKey = '', lastLayoutCheck = 0, fitArea = { w: 0, h: 0 };
+  function headerBottom(){
+    var b = 0;
+    ['logo', 'topbar', 'eyebrow', 'heroTitle', 'whatBtn'].forEach(function(id){
+      var el = $(id); if (!el || !el.getClientRects().length) return;
+      var r = el.getBoundingClientRect(); if (r.height > 0) b = Math.max(b, r.bottom);
+    });
     return b;
   }
   function freeArea(){
     var w = stage.clientWidth || window.innerWidth, h = stage.clientHeight || window.innerHeight;
     var top = 70;
-    if (w < 860) top = Math.max(top, heroBottom() + 10);
-    if (w < 600) top = Math.max(top, lblFruit.getBoundingClientRect().bottom + 12);
+    if (isM() || w < 1200) top = Math.max(top, headerBottom() + 14 + (lblFruit.offsetHeight || 48));
     var bottom = Math.min(h - 8, $('dock').getBoundingClientRect().top - 10);
     var right = w - 8, pEl = $('panel');
     if (pEl.getClientRects().length) { var pb = pEl.getBoundingClientRect(); if (pb.left > w*0.5) right = pb.left - 12; }
@@ -1509,6 +1709,9 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     var key = [f.w, f.h, Math.round(f.top), Math.round(f.bottom), Math.round(f.right)].join(',');
     if (!refit && key === lastFreeKey) return;
     lastFreeKey = key;
+    // refit (keeping the user's zoom) when the free space grows or shrinks noticeably, e.g. the bottom card changes height
+    if (!refit && (Math.abs((f.bottom - f.top) - fitArea.h) > 24 || Math.abs((f.right - f.left) - fitArea.w) > 24)) refit = true;
+    if (refit) { fitArea.h = f.bottom - f.top; fitArea.w = f.right - f.left; }
     var cx = (f.left + f.right)/2, cy = (f.top + f.bottom)/2;
     viewOff.x = f.w/2 - cx; viewOff.y = f.h/2 - cy; applyOffset(f);
     if (refit) {
@@ -1531,6 +1734,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   function resize(){
     var w = stage.clientWidth || window.innerWidth, hgt = stage.clientHeight || window.innerHeight;
     renderer.setSize(w, hgt, false);
+    syncControls(); placeSections();
     layoutView(true);
   }
   resize();
@@ -1616,9 +1820,12 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     cen.set(cc.x*gx, cc.y*grow, cc.z*gx);
     camRight.setFromMatrixColumn(camera.matrixWorld, 0);
     place(lblFruit, wv.set(cc.x*gx, (canopyTop + 0.15)*grow, cc.z*gx));
-    if (W < 600) { lblFruit.style.visibility = ''; lblFruit.style.transform = 'translate(16px,' + (heroBottom() + 8).toFixed(1) + 'px)'; }
+    if (isM()) {
+      var fw = lblFruit.offsetWidth || 180, fm = lblFruit.style.transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
+      if (fm) lblFruit.style.transform = 'translate(' + clamp(+fm[1], fw/2 + 8, W - fw/2 - 8).toFixed(1) + 'px,' + fm[2] + 'px)';
+    }
     place(lblTrunk, wv.set(0.3*gx, 1.35*grow, 0));
-    var rA = toScreen(wv.set(0, -0.35, 0).addScaledVector(camRight, -3.6), W, Hh), rw = lblRoots.offsetWidth || 200;
+    var rA = isM() ? toScreen(wv.set(0, -D*0.7, 0).addScaledVector(camRight, -R*0.96), W, Hh) : toScreen(wv.set(0, -0.35, 0).addScaledVector(camRight, -3.6), W, Hh), rw = lblRoots.offsetWidth || 200;
     if (rA.x - rw < 8) {
       lblRoots.classList.add('flip');
       lblRoots.style.transform = 'translate(' + Math.min(Math.max(rA.x, 14), W - rw - 8).toFixed(1) + 'px,' + rA.y.toFixed(1) + 'px)';
