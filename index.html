@@ -89,7 +89,7 @@ button.link.whatlink{color:#ffe2a0;font-size:13px;padding:0}
 #editForm input,#editForm textarea{resize:vertical;line-height:1.45;width:100%;box-sizing:border-box;font:inherit;font-size:13px;color:var(--text);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
 .count{font-size:11px;color:var(--muted);text-align:right;margin-top:-4px;font-variant-numeric:tabular-nums}
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
-#dock{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(780px,calc(100% - 32px));box-sizing:border-box;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:grid;gap:12px}
+#dock{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(880px,calc(100% - 32px));box-sizing:border-box;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:grid;gap:12px}
 .phase{display:flex;gap:12px;align-items:flex-start;min-height:58px}
 #dayBadge{font-family:var(--display);font-weight:600;font-size:13px;background:var(--gold);color:#1d1605;border-radius:8px;padding:6px 10px;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:52px;text-align:center}
 #dayBadge.doubt{background:var(--red);color:#2a0607}
@@ -249,6 +249,13 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
 #logo{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:4;pointer-events:none;line-height:0}
 #logo img{height:48px;width:auto;display:block}
 .lbl .fmore{display:none}
+.goalsbtn{border-color:rgba(245,185,66,.6);color:#ffe2a0;background:rgba(245,185,66,.1);font-weight:600}
+.goalsbtn:hover{background:rgba(245,185,66,.22)}
+.gpower{margin:0 0 6px;font-family:var(--display);font-size:24px;font-weight:600;line-height:1.3;color:#ffe2a0}
+.gfruits{list-style:none;counter-reset:gf;margin:0;padding:0;display:grid;gap:8px}
+.gfruits li{counter-increment:gf;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:center;background:rgba(245,185,66,.07);border:1px solid rgba(245,185,66,.28);border-radius:12px;padding:10px 12px;font-size:15px;line-height:1.45;color:#f3f5fb}
+.gfruits li::before{content:counter(gf);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(245,185,66,.18);border:1px solid rgba(245,185,66,.6);color:#ffe2a0;font-weight:700;font-size:13px;box-sizing:border-box}
+.goalscard h3{margin-top:18px}
 .mpage,#mtabs,.mgoalline,.mlegend,.ftoast{display:none}
 @media (max-width:1299px){ .acct-label{display:none} }
 @media (min-width:860px) and (max-width:1099px){ #heroTitle{max-width:calc(50vw - 150px)} }
@@ -292,12 +299,12 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   #dock #phaseText{display:none}
   #dock.explain #phaseText{display:block;font-size:12.5px;margin-top:4px}
   #phaseTitle{font-size:14px}
-  body.mine .controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  body.mine .controls{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
   body.mine .controls > [hidden]{display:none}
-  body.mine #checkBtn{grid-column:span 2;min-width:0}
+  body.mine #checkBtn{grid-column:span 4;min-width:0}
   body.mine .controls:has(#todayCount[hidden]) #checkBtn{grid-column:1/-1}
-  body.mine #todayCount{text-align:center;padding:4px 4px;white-space:nowrap}
-  body.mine #previewBtn,body.mine #doubtBtn,body.mine #snapBtn{padding:8px 2px;font-size:12px;white-space:nowrap;min-width:0}
+  body.mine #todayCount{grid-column:span 2;text-align:center;padding:4px 4px;white-space:nowrap}
+  body.mine #goalsBtn,body.mine #previewBtn,body.mine #doubtBtn,body.mine #snapBtn{grid-column:span 3;padding:8px 2px;font-size:12.5px;white-space:nowrap;min-width:0}
 
   .mpage{display:block;position:fixed;left:0;top:0;width:100%;bottom:var(--tabh);z-index:12;background:#0a0f22;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 20px) 18px 28px;transform:translateX(100%);transition:transform .32s cubic-bezier(.22,.8,.24,1);will-change:transform}
   #mGuide{transform:translateX(200%)}
@@ -423,6 +430,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   <div class="controls">
     <button id="checkBtn" type="button" class="primary" hidden>Start today's visualization</button>
     <button id="todayCount" type="button" class="today-count" hidden title="Open your calendar"></button>
+    <button id="goalsBtn" type="button" class="goalsbtn" hidden aria-haspopup="dialog">Your goals</button>
     <button id="playBtn" type="button" aria-pressed="true">Pause</button>
     <div class="track" id="track">
       <input type="range" id="day" min="0" max="30" step="0.01" value="0" aria-label="Day of the 30-day commitment">
@@ -540,6 +548,18 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     </ul>
     <div class="row"><button type="button" class="primary" id="whatStart">Start free</button><button type="button" id="whatLater">Close</button></div>
     <p class="note">A free practice tool made to go with Rav Malik's training. It is not an official Rav Malik or Stay All In site.</p>
+  </div>
+</div>
+
+<div id="goalsModal" class="modal" hidden>
+  <div class="dialog welcome goalscard" role="dialog" aria-modal="true" aria-labelledby="goalsTitle">
+    <button type="button" class="x" id="goalsClose" aria-label="Close">&times;</button>
+    <p class="eyebrow">Your goals</p>
+    <h2 id="goalsTitle">Your power goal</h2>
+    <p class="gpower" id="goalsPower"></p>
+    <h3>Your fruits: your stresses, solved</h3>
+    <ol class="gfruits" id="goalsFruits"></ol>
+    <div class="row"><button type="button" class="primary" id="goalsStart">Start today's visualization</button><button type="button" id="goalsEdit">Edit my goals</button></div>
   </div>
 </div>
 
@@ -1004,6 +1024,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     var tc = $('todayCount');
     tc.hidden = !mine || !hasSaved || !myStat.today;
     tc.textContent = myStat.today === 1 ? '1 time today' : myStat.today + ' times today';
+    $('goalsBtn').hidden = !mine || !hasSaved;
     setPlayLabel(); syncMobile();
   }
   function minePhase(){
@@ -1231,13 +1252,29 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   $('whatLater').addEventListener('click', closeWhat);
   whatModal.addEventListener('click', function(e){ if (e.target === whatModal) closeWhat(); });
   $('whatStart').addEventListener('click', function(){ closeWhat(); startToday(); });
+  var goalsModal = $('goalsModal'), lastFocusGoals = null;
+  function openGoals(){
+    lastFocusGoals = document.activeElement;
+    $('goalsPower').textContent = data.goal;
+    var ol = $('goalsFruits'); ol.textContent = '';
+    data.fruits.forEach(function(f){ var li = document.createElement('li'); li.textContent = f; ol.appendChild(li); });
+    $('goalsStart').textContent = startLabel();
+    goalsModal.hidden = false; goalsModal.querySelector('.dialog').scrollTop = 0; $('goalsClose').focus({ preventScroll: true });
+  }
+  function closeGoals(){ goalsModal.hidden = true; if (lastFocusGoals && lastFocusGoals.focus) lastFocusGoals.focus({ preventScroll: true }); }
+  $('goalsBtn').addEventListener('click', openGoals);
+  $('goalsClose').addEventListener('click', closeGoals);
+  goalsModal.addEventListener('click', function(e){ if (e.target === goalsModal) closeGoals(); });
+  $('goalsStart').addEventListener('click', function(){ closeGoals(); startToday(); });
+  $('goalsEdit').addEventListener('click', function(){ closeGoals(); openEditor(); });
   $('wClose').addEventListener('click', closeWelcome);
   $('wLater').addEventListener('click', closeWelcome);
   welcome.addEventListener('click', function(e){ if (e.target === welcome) closeWelcome(); });
   $('wStart').addEventListener('click', function(){ closeWelcome(); startToday(); });
   document.addEventListener('keydown', function(e){
     if (e.key !== 'Escape') return;
-    if (!whatModal.hidden) closeWhat();
+    if (!goalsModal.hidden) closeGoals();
+    else if (!whatModal.hidden) closeWhat();
     else if (!welcome.hidden) closeWelcome();
     else if (!vizModal.hidden && vizState !== 'running' && vizState !== 'saving') closeViz();
   });
