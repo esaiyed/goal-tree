@@ -289,6 +289,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
 
   #dock{left:10px;right:10px;width:auto;transform:none;bottom:calc(var(--tabh) + 8px);padding:12px;gap:9px;border-radius:14px}
   #dock #phaseText{display:none}
+  #dock.explain #phaseText{display:block;font-size:12.5px;margin-top:4px}
   #phaseTitle{font-size:14px}
   body.mine .controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
   body.mine .controls > [hidden]{display:none}
@@ -636,6 +637,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     lastKey = key;
     $('phaseTitle').textContent = p.title;
     $('phaseText').textContent = p.text;
+    $('dock').classList.toggle('explain', key === 'doubt' || key === 'reset');
     steps.forEach(function(li,i){ li.classList.toggle('on', p.steps.indexOf(i) !== -1); });
   }
 
@@ -1684,7 +1686,9 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     var top = 70;
     if (isM()) top = Math.max(top, headerBottom() + 16);
     else if (w < 1200) top = Math.max(top, headerBottom() + 14 + (lblFruit.offsetHeight || 48));
-    var bottom = Math.min(h - 8, $('dock').getBoundingClientRect().top - 10);
+    var dTop = $('dock').getBoundingClientRect().top;
+    if (isM() && $('dock').classList.contains('explain')) dTop += $('phaseText').offsetHeight + 4;  // the explanation overlaps the soil briefly instead of shrinking the tree
+    var bottom = Math.min(h - 8, dTop - 10);
     var right = w - 8, pEl = $('panel');
     if (pEl.getClientRects().length) { var pb = pEl.getBoundingClientRect(); if (pb.left > w*0.5) right = pb.left - 12; }
     return { left: 8, top: top, right: right, bottom: Math.max(top + 120, bottom), w: w, h: h };
