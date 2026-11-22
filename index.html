@@ -248,7 +248,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
 #logo{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:4;pointer-events:none;line-height:0}
 #logo img{height:48px;width:auto;display:block}
 .lbl .fmore{display:none}
-.mpage,#mtabs,.mgoalline,.mlegend{display:none}
+.mpage,#mtabs,.mgoalline,.mlegend,.ftoast{display:none}
 @media (max-width:1299px){ .acct-label{display:none} }
 @media (min-width:860px) and (max-width:1099px){ #heroTitle{max-width:calc(50vw - 150px)} }
 @media (min-width:860px) and (max-width:1199px){ .title .sub{display:none} }
@@ -268,7 +268,13 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   #heroTitle{font-size:17px;font-weight:600;color:#e9eefc}
   body:not(.signed) #heroTitle{display:none}
 
-  .chip,#leaders,.fcloud{display:none !important}
+  .fcloud{display:none !important}
+  .chip{pointer-events:auto;cursor:pointer}
+  .chip .pill{display:block;max-width:min(calc(50vw - 74px),190px);font-size:11.5px;line-height:1.3;padding:4px 8px;border-radius:9px}
+  .chip .pt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .ftoast{display:flex;gap:10px;align-items:flex-start;position:fixed;left:12px;right:12px;z-index:11;background:rgba(8,12,30,.97);border:1px solid rgba(245,185,66,.5);border-left:3px solid var(--gold);border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.45;color:#ffe9b8;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .ftoast[hidden]{display:none}
+  .ftoast small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:2px}
   .lbl .txt{display:none}
   .mgoalline{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:6px 0 0;font-size:14px;line-height:1.35;color:#ffd27a;font-weight:600}
   .mgoalline span{color:var(--muted);font-weight:500}
@@ -284,10 +290,12 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   #dock{left:10px;right:10px;width:auto;transform:none;bottom:calc(var(--tabh) + 8px);padding:12px;gap:9px;border-radius:14px}
   #dock #phaseText{display:none}
   #phaseTitle{font-size:14px}
-  #dock #previewBtn{display:none}
-  body.mine #doubtBtn,body.mine #snapBtn{display:none}
-  body.mine .controls{flex-wrap:nowrap}
-  #checkBtn{flex:1 1 auto;min-width:0}
+  body.mine .controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  body.mine .controls > [hidden]{display:none}
+  body.mine #checkBtn{grid-column:span 2;min-width:0}
+  body.mine .controls:has(#todayCount[hidden]) #checkBtn{grid-column:1/-1}
+  body.mine #todayCount{text-align:center;padding:4px 4px;white-space:nowrap}
+  body.mine #previewBtn,body.mine #doubtBtn,body.mine #snapBtn{padding:8px 2px;font-size:12px;white-space:nowrap;min-width:0}
 
   .mpage{display:block;position:fixed;left:0;top:0;width:100%;bottom:var(--tabh);z-index:12;background:#0a0f22;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 20px) 18px 28px;transform:translateX(100%);transition:transform .32s cubic-bezier(.22,.8,.24,1);will-change:transform}
   #mGuide{transform:translateX(200%)}
@@ -442,6 +450,7 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   <div class="mrow"><button type="button" id="mCal" hidden>Open my calendar</button><button type="button" id="mPreview" hidden>Preview 30 days</button><button type="button" id="mTour">Show the welcome tour</button></div>
   <div data-slot="meters"></div>
 </div>
+<div id="fruitToast" class="ftoast" role="status" hidden></div>
 <nav id="mtabs" aria-label="Pages">
   <button type="button" data-p="0" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21v-6"/><path d="M12 15c-3.9 0-7-2.5-7-5.8a7 7 0 0 1 14 0C19 12.5 15.9 15 12 15z"/><path d="M9 21h6"/></svg><span>Tree</span></button>
   <button type="button" data-p="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg><span>My goal</span></button>
@@ -725,13 +734,23 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
   var leaders = document.createElementNS(SVGNS, 'svg'); leaders.id = 'leaders'; labelsEl.insertBefore(leaders, labelsEl.firstChild);
   var chips = [], lines = [], chipState = [];
   for (var c=0;c<6;c++){
-    var ch = mkLabel('chip'); ch.innerHTML = '<div class="in"><span class="pill"></span></div>'; chips.push(ch);
+    var ch = mkLabel('chip'); ch.innerHTML = '<div class="in"><span class="pill"><span class="pt"></span></span></div>'; chips.push(ch);
+    (function(idx){ ch.addEventListener('click', function(){ if (isM()) showFruitToast(idx); }); })(c);
     var ln = document.createElementNS(SVGNS, 'line'); leaders.appendChild(ln); lines.push(ln);
     chipState.push({ x: 0, y: 0, init: false, side: 'R', back: false, fx: 0, fy: 0 });
   }
+  var toastTimer = 0;
+  function showFruitToast(i){
+    var t = $('fruitToast'), dk = $('dock').getBoundingClientRect();
+    t.innerHTML = ''; var d = document.createElement('div'), sm = document.createElement('small');
+    sm.textContent = 'Fruit ' + (i + 1); d.appendChild(sm); d.appendChild(document.createTextNode(data.fruits[i])); t.appendChild(d);
+    t.style.bottom = (window.innerHeight - dk.top + 8) + 'px'; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function(){ t.hidden = true; }, 4500);
+  }
+  $('fruitToast').addEventListener('click', function(){ this.hidden = true; });
   function applyText(){
     lblTrunk.querySelector('.goalTxt').textContent = data.goal;
-    chips.forEach(function(ch,i){ ch.querySelector('.pill').textContent = data.fruits[i]; });
+    chips.forEach(function(ch,i){ ch.querySelector('.pt').textContent = data.fruits[i]; });
     var fc = lblFruit.querySelector('.fcloud'); fc.textContent = '';
     data.fruits.forEach(function(f){ var sp = document.createElement('i'); sp.textContent = f; fc.appendChild(sp); });
     updMSum();
@@ -1681,8 +1700,9 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     return b;
   }
   function applyOffset(f){ camera.aspect = f.w/f.h; camera.setViewOffset(f.w, f.h, viewOff.x, viewOff.y, f.w, f.h); camera.updateProjectionMatrix(); }
+  var curFA = null;
   function layoutView(refit){
-    var f = freeArea();
+    var f = freeArea(); curFA = f;
     var key = [f.w, f.h, Math.round(f.top), Math.round(f.bottom), Math.round(f.right)].join(',');
     if (!refit && key === lastFreeKey) return;
     lastFreeKey = key;
@@ -1820,30 +1840,46 @@ button.today-count:hover{background:rgba(94,230,168,.22)}
     for (var ci=0; ci<6; ci++){
       fruits[ci].f.getWorldPosition(wv);
       var sp = toScreen(wv, W, Hh);
-      items.push({ i: ci, x: sp.x, y: sp.y, back: wv.distanceTo(camera.position) > cdist + 0.4 });
+      var fd = wv.distanceTo(camera.position);
+      items.push({ i: ci, x: sp.x, y: sp.y, d: fd, back: fd > cdist + 0.4, show: true });
+    }
+    var mob = isM();
+    if (mob) {
+      var front = items.filter(function(it){ return !it.back; }).sort(function(a,b){ return a.d - b.d; }).slice(0, 3);
+      items.forEach(function(it){ it.show = front.indexOf(it) >= 0; });
     }
     ['L','R'].forEach(function(side){
-      var list = items.filter(function(it){ return side === 'L' ? it.x < cx : it.x >= cx; }).sort(function(a,b){ return a.y - b.y; });
+      var all = items.filter(function(it){ return side === 'L' ? it.x < cx : it.x >= cx; }).sort(function(a,b){ return a.y - b.y; });
+      if (!all.length) return;
+      var list = mob ? all.filter(function(it){ return it.show; }) : all;
+      all.forEach(function(it){ if (!it.show) {
+        var hs = chipState[it.i], hw = chips[it.i].offsetWidth || 100;
+        if (!hs.init) { hs.x = side === 'L' ? Math.max(cx - rpx - 10, hw + 6) : Math.min(cx + rpx + 10, W - hw - 6); hs.y = it.y; hs.init = true; hs.side = side; }
+        hs.hid = true; hs.back = true; hs.fx = it.x; hs.fy = it.y;
+      } });
       if (!list.length) return;
       var ys = list.map(function(it){ return it.y; });
-      for (var k=1;k<ys.length;k++) if (ys[k] < ys[k-1] + 30) ys[k] = ys[k-1] + 30;
+      var gapY = mob ? Math.max(30, list.reduce(function(m,it){ return Math.max(m, (chips[it.i].offsetHeight || 28) + 6); }, 0)) : 30;
+      for (var k=1;k<ys.length;k++) if (ys[k] < ys[k-1] + gapY) ys[k] = ys[k-1] + gapY;
       var shift = (list.reduce(function(s,it){ return s + it.y; }, 0) - ys.reduce(function(s,y){ return s + y; }, 0)) / ys.length;
       list.forEach(function(it,k){
         var cw = chips[it.i].offsetWidth || 120;
-        var tx = side === 'L' ? Math.max(cx - rpx - 22, cw + 12) : Math.min(cx + rpx + 22, (pr ? pr.left : W) - cw - 12), ty = ys[k] + shift, st = chipState[it.i];
-        if (!st.init){ st.x = tx; st.y = ty; st.init = true; } else { st.x = lerp(st.x, tx, 0.18); st.y = lerp(st.y, ty, 0.18); }
+        var tx = side === 'L' ? Math.max(cx - rpx - (mob ? 10 : 22), cw + (mob ? 6 : 12)) : Math.min(cx + rpx + (mob ? 10 : 22), (pr ? pr.left : W) - cw - (mob ? 6 : 12)), ty = ys[k] + shift, st = chipState[it.i];
+        if (mob && curFA) { var chh = (chips[it.i].offsetHeight || 28)/2 + 4; ty = clamp(ty, curFA.top - 6 + chh, curFA.bottom - chh); }
+        if (!st.init || st.hid){ st.x = tx; st.y = ty; st.init = true; st.hid = false; } else { st.x = lerp(st.x, tx, 0.18); st.y = lerp(st.y, ty, 0.18); }
         st.side = side; st.back = it.back; st.fx = it.x; st.fy = it.y;
       });
     });
-    var chipOp = 0.65 + 0.35*clamp(ripeBase*1.15, 0, 1);
+    var chipOp = (mob ? 0.88 : 0.65) + (mob ? 0.12 : 0.35)*clamp(ripeBase*1.15, 0, 1);
     for (var cj=0; cj<6; cj++){
-      var st2 = chipState[cj], op = (st2.back ? 0.45 : 1) * chipOp;
+      var st2 = chipState[cj], op = mob ? (items[cj].show ? chipOp : 0) : (st2.back ? 0.45 : 1) * chipOp;
       chips[cj].style.transform = 'translate(' + st2.x.toFixed(1) + 'px,' + st2.y.toFixed(1) + 'px) ' + (st2.side === 'L' ? 'translate(-100%,-50%)' : 'translate(0,-50%)');
       chips[cj].style.opacity = op.toFixed(2);
       var ln2 = lines[cj];
       ln2.setAttribute('x1', st2.fx.toFixed(1)); ln2.setAttribute('y1', st2.fy.toFixed(1));
       ln2.setAttribute('x2', (st2.x + (st2.side === 'L' ? 2 : -2)).toFixed(1)); ln2.setAttribute('y2', st2.y.toFixed(1));
       ln2.style.opacity = (op*0.7).toFixed(2);
+      chips[cj].style.pointerEvents = (mob && !items[cj].show) ? 'none' : '';
     }
     requestAnimationFrame(frame);
   }
